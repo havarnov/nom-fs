@@ -1,12 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>nom_fs</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Result.fs" />
+    <Compile Include="Core.fs" />
+    <Compile Include="Branch.fs" />
+    <Compile Include="Combinator.fs" />
+    <Compile Include="Sequence.fs" />
+    <Compile Include="Bytes/Complete.fs" />
+    <Compile Include="Character/Complete.fs" />
   </ItemGroup>
-
 </Project>
