@@ -5,6 +5,22 @@ open Xunit
 open NomFs.Core
 open NomFs.Character.Complete
 
+open NomFs.Tests.Core
+
+[<Fact>]
+let ``oneof test`` () =
+    let (input, res) = extractOk (oneOf "abc" "b")
+    Assert.Equal("", input)
+    Assert.Equal('b', res)
+
+    let (input, kind) = extractErr (oneOf "a" "bc")
+    Assert.Equal("bc", input)
+    Assert.Equal(OneOf, kind)
+
+    let (input, kind) = extractErr (oneOf "a" "")
+    Assert.Equal("", input)
+    Assert.Equal(OneOf, kind)
+
 [<Fact>]
 let ``digit test`` () =
 

@@ -4,6 +4,16 @@ open System
 
 open NomFs.Core
 
+let oneOf list : ('a seq -> IResult<'a seq, 'a>) =
+    let inner input =
+        match Seq.tryHead input with
+        | Some head when list |> Seq.contains head ->
+            Ok (Seq.tail input, head)
+        | _ ->
+            Error (Err (input, OneOf))
+
+    inner
+
 let alpha1 input =
     let res =
         input

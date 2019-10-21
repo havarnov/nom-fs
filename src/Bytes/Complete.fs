@@ -2,6 +2,36 @@ module NomFs.Bytes.Complete
 
 open NomFs.Core
 
+let escaped
+    (normal: seq<char> -> IResult<seq<char>, seq<char>>)
+    (controlChar: char)
+    (escapable: seq<char> -> IResult<seq<char>, char>) =
+    let tryTakeEscaped (input: seq<char>) =
+        let c = Seq.head input
+        if c = controlChar
+        then
+            escapable (input |> Seq.skip 1)
+            |> Result.map (fun (input, escapedChar) ->
+                input, seq { yield controlChar; yield escapedChar; })
+        else
+            Error (Err (input, Escape))
+
+    let rec inner input =
+        match normal input with
+        | Ok (input, res) when Seq.isEmpty input || (Seq.head input) <> controlChar ->
+            Ok (input, res)
+        | Ok (input, res) ->
+            match tryTakeEscaped input with
+            | Ok (input, escapedSeq) ->
+                let res = Seq.append res escapedSeq
+                inner input
+                |> Result.map (fun (innerInput, innerRes) ->
+                    (innerInput, Seq.append res innerRes))
+            | Error e -> Error e
+        | Error e -> Error e
+
+    inner
+
 let tag t =
     let inner (input: 'T seq) : IResult<_, _> =
         if input |> Seq.length < 1

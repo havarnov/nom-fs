@@ -8,6 +8,20 @@ open NomFs.Core
 open NomFs.Bytes.Complete
 
 open NomFs.Tests.Core
+open NomFs.Character.Complete
+
+[<Fact>]
+let ``escaped test`` () =
+    let parser = escaped digit1 '\\' (oneOf @"""n\")
+
+    let (input: char seq, res) = extractOk (parser ("123;"))
+    Assert.Equal(";", input)
+    Assert.Equal("123", res)
+
+    let (input: char seq, res) = extractOk (parser ("12\\\"34;"))
+    Assert.Equal(";", input)
+    Assert.Equal("12\\\"34", res)
+
 
 [<Fact>]
 let ``tag test`` () =

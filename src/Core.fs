@@ -19,5 +19,7 @@ type ErrorKind =
     | TakeWhileMN
     | Tuple
     | Eof
+    | OneOf
+    | Escape
 
 type IResult<'I, 'O> = Result<'I * 'O, Err<'I * ErrorKind>>
