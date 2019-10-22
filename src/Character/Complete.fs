@@ -39,7 +39,7 @@ let alpha1 input =
             |> Seq.skip (Seq.length res)
         Ok (rest, res)
     else
-        Error (Err (input, Digit))
+        Error (Err (input, Alpha))
 
 let digit1 input =
     let res =
