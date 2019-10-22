@@ -4,6 +4,20 @@ open System
 
 open NomFs.Core
 
+let alphanumeric1 input =
+    let isAlphanumeric c = Char.IsDigit c || Char.IsLetter c
+    let res =
+        input
+        |> Seq.takeWhile isAlphanumeric
+    if res |> Seq.isEmpty
+    then
+        Error (Err (input, Alphanumeric))
+    else
+        let rest =
+            input
+            |> Seq.skip (Seq.length res)
+        Ok (rest, res)
+
 let oneOf list : ('a seq -> IResult<'a seq, 'a>) =
     let inner input =
         match Seq.tryHead input with

@@ -15,6 +15,7 @@ type Err<'E> =
 type ErrorKind =
     | Tag
     | Digit
+    | Alphanumeric
     | MapRes
     | TakeWhileMN
     | Tuple

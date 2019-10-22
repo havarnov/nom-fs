@@ -8,6 +8,20 @@ open NomFs.Character.Complete
 open NomFs.Tests.Core
 
 [<Fact>]
+let ``alphanumeric test`` () =
+    let (input, res) = extractOk (alphanumeric1 "21cZ%1")
+    Assert.Equal("%1", input)
+    Assert.Equal("21cZ", res)
+
+    let (input, kind) = extractErr (alphanumeric1 "&H")
+    Assert.Equal("&H", input)
+    Assert.Equal(Alphanumeric, kind)
+
+    let (input, kind) = extractErr (alphanumeric1 "")
+    Assert.Equal("", input)
+    Assert.Equal(Alphanumeric, kind)
+
+[<Fact>]
 let ``oneof test`` () =
     let (input, res) = extractOk (oneOf "abc" "b")
     Assert.Equal("", input)
