@@ -32,7 +32,7 @@ let escaped
 
     inner
 
-let tag t =
+let tag (t: _ seq) =
     let inner (input: 'T seq) : IResult<_, _> =
         if input |> Seq.length < 1
         then
