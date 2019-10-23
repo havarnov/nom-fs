@@ -6,10 +6,12 @@
   <ItemGroup>
     <Compile Include="Result.fs" />
     <Compile Include="Core.fs" />
+    <Compile Include="Multi.fs" />
     <Compile Include="Branch.fs" />
     <Compile Include="Combinator.fs" />
     <Compile Include="Sequence.fs" />
     <Compile Include="Bytes/Complete.fs" />
     <Compile Include="Character/Complete.fs" />
+    <Compile Include="Number/Complete.fs" />
   </ItemGroup>
 </Project>

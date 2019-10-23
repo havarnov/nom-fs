@@ -13,6 +13,8 @@
     <Compile Include="SequenceTests.fs" />
     <Compile Include="Bytes/CompleteTests.fs" />
     <Compile Include="Character/CompleteTests.fs" />
+    <Compile Include="Number/CompleteTests.fs" />
+    <Compile Include="JsonTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

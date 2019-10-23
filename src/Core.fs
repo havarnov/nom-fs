@@ -23,5 +23,8 @@ type ErrorKind =
     | Eof
     | OneOf
     | Escape
+    | SeparatedList
+    | Many
+    | Float
 
 type IResult<'I, 'O> = Result<'I * 'O, Err<'I * ErrorKind>>
