@@ -8,8 +8,8 @@ open NomFs.Combinator
 open NomFs.Branch
 open NomFs.Result
 open NomFs.Multi
-open NomFs.Core
 open NomFs.Number.Complete
+open NomFs.Sequence
 
 type JsonValue =
     | Str of string
@@ -21,10 +21,6 @@ type JsonValue =
 let spaceChars = " \t\r\n" :> char seq
 
 let sp input = takeWhile (fun c -> Seq.contains c spaceChars) input
-
-let preceded (p: _ -> IResult<_, _>) (f: _ -> IResult<_, _>) input = result {
-    let! (input, _) = p input
-    return! f input}
 
 let strParser input = escaped alphanumeric1 '\\' (oneOf "\"n\\") input
 
