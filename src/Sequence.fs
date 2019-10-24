@@ -63,8 +63,10 @@ let preceded (first: _ -> IResult<_, _>) (second: _ -> IResult<_, _>) =
 /// Matches an object from the first parser, then gets an object from the sep_parser,
 /// then matches another object from the second parser.
 /// </summary>
-/// <params name="first"></params>
-/// <params name="sep"></params>
-/// <params name="second"></params>
 let delimited first sep second =
     map (tuple3 (first, sep, second)) (fun (_, r, _) -> r)
+
+/// Gets an object from the first parser, then matches an object from the sep_parser and discards it,
+/// then gets another object from the second parser.
+let separatedPair first sep second =
+    map (tuple3 (first, sep, second)) (fun (f, _, s) -> (f, s))

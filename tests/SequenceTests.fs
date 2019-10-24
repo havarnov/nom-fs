@@ -8,6 +8,30 @@ open NomFs.Sequence
 open NomFs.Tests.Core
 
 [<Fact>]
+let ``test separatedPair`` () =
+    let parser = separatedPair (tag "abc") (tag "|") (tag "efg")
+
+    let (input, res) = extractOk (parser "abc|efg")
+    Assert.Equal("", input)
+    let (f, s) = res
+    Assert.Equal("abc", f)
+    Assert.Equal("efg", s)
+
+    let (input, res) = extractOk (parser "abc|efghij")
+    Assert.Equal("hij", input)
+    let (f, s) = res
+    Assert.Equal("abc", f)
+    Assert.Equal("efg", s)
+
+    let (input, kind) = extractErr (parser "")
+    Assert.Equal("", input)
+    Assert.Equal(Tag, kind)
+
+    let (input, kind) = extractErr (parser "123")
+    Assert.Equal("123", input)
+    Assert.Equal(Tag, kind)
+
+[<Fact>]
 let ``test delimted`` () =
     let parser = delimited (tag "abc") (tag "|") (tag "efg")
 
