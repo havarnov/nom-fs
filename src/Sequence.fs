@@ -3,12 +3,48 @@ module NomFs.Sequence
 open NomFs.Core
 open NomFs.Result
 
-let tuple2 (t: ('a -> IResult<'a, 'b>) * ('a -> IResult<'a, 'c>)) =
+type private T<'a, 'b> = 'a -> IResult<'a, 'b>
+
+/// Applies a tuple of parsers one by one and returns their results as a tuple.
+let tuple2 (t: (T<_,_> * T<_, _>)) =
     let inner input = result {
         let (f, s) = t
         let! input, f = f input
         let! input, s = s input
         return (input, (f, s))}
+    inner
+
+/// Applies a tuple of parsers one by one and returns their results as a tuple.
+let tuple3 (t: (T<_, _> * T<_, _> * T<_, _>)) =
+    let inner input = result {
+        let (f, s, t) = t
+        let! input, f = f input
+        let! input, s = s input
+        let! input, t = t input
+        return (input, (f, s, t))}
+    inner
+
+/// Applies a tuple of parsers one by one and returns their results as a tuple.
+let tuple4 (t: (T<_, _> * T<_, _> * T<_, _> * T<_, _>)) =
+    let inner input = result {
+        let (f, s, t, fo) = t
+        let! input, f = f input
+        let! input, s = s input
+        let! input, t = t input
+        let! input, fo = fo input
+        return (input, (f, s, t, fo))}
+    inner
+
+/// Applies a tuple of parsers one by one and returns their results as a tuple.
+let tuple5 (t: (T<_, _> * T<_, _> * T<_, _> * T<_, _> * T<_, _>)) =
+    let inner input = result {
+        let (f, s, t, fo, fi) = t
+        let! input, f = f input
+        let! input, s = s input
+        let! input, t = t input
+        let! input, fo = fo input
+        let! input, fi = fi input
+        return (input, (f, s, t, fo, fi))}
     inner
 
 /// <summary>
