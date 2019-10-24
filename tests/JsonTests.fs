@@ -6,7 +6,6 @@ open NomFs.Bytes.Complete
 open NomFs.Character.Complete
 open NomFs.Combinator
 open NomFs.Branch
-open NomFs.Result
 open NomFs.Multi
 open NomFs.Number.Complete
 open NomFs.Sequence
@@ -25,12 +24,9 @@ let psp p = preceded sp p
 
 let strParser = escaped alphanumeric1 '\\' (oneOf "\"n\\")
 
-let stringParser input = result {
-    let! (input, _) = tag "\"" input
-    let! (input, str) = strParser input
-    let! (input, _) = tag "\"" input
-    return (input, str |> System.String.Concat)
-}
+let stringParser =
+    let bs = tag "\""
+    map (tuple3 (bs, strParser, bs)) (fun (_, str, _) -> str |> System.String.Concat)
 
 let booleanParser =
     alt
@@ -39,48 +35,54 @@ let booleanParser =
             map (tag("false")) (fun _ -> false);
         ]
 
-let rec arrayParser input = result {
-    let! (input, _) = tag "[" input
-    let! (input, values) = separatedList (psp (tag ",")) valueParser input
-    let! (input, _) = tag "]" input
-    return (input, values)}
+let delimited pre parser post =
+    map (tuple3 (pre, parser, post)) (fun (_, r, _) -> r)
 
-and keyValueParser input = result {
-    let! (input, key) = psp stringParser input
-    let! (input, _) = psp (tag ":") input
-    let! (input, value) = psp valueParser input
-    return (input, (key, value))}
+let rec arrayParser input =
+    delimited
+        (tag "[")
+        (separatedList (psp (tag ",")) valueParser)
+        (tag "]")
+        input
 
-and hashParser input = result {
-    let! (input, _) = tag "{" input
-    let! (input, values) = separatedList (psp (tag ",")) keyValueParser input
-    let! (input, _) = tag "}" input
-    return (input, Map.ofSeq values)}
+and keyValueParser input =
+    map
+        (tuple3
+            (
+                (psp stringParser),
+                (psp (tag ":")),
+                (psp valueParser)))
+        (fun (key, _, value) -> (key, value))
+        input
 
-and valueParser input = result {
-    let i = preceded
-                sp
-                (alt
-                    [
-                        map hashParser Object;
-                        map arrayParser Array;
-                        map stringParser Str;
-                        map double Num;
-                        map booleanParser Boolean;
-                    ])
-    return! i input}
+and hashParser =
+    map
+        (delimited (tag "{") (separatedList (psp (tag ",")) keyValueParser) (tag "}"))
+        Map.ofSeq
 
-let root input = result {
-    let! (input, _) = sp input
-    let! (input, res) =
+and valueParser input =
+    psp (
         alt
             [
                 map hashParser Object;
                 map arrayParser Array;
-            ]
-            input
-    let! (input, _) = sp input
-    return (input, res)}
+                map stringParser Str;
+                map double Num;
+                map booleanParser Boolean;
+            ])
+        input
+
+let root =
+    delimited
+        sp
+        (
+            alt
+                [
+                    map hashParser Object;
+                    map arrayParser Array;
+                ]
+        )
+        sp
 
 [<Fact>]
 let ``json true test`` () =
