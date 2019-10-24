@@ -3,7 +3,12 @@ module NomFs.Multi
 open NomFs.Core
 open NomFs.Result
 
-let separatedList (sep: _ -> IResult<_, _>) (f: _ -> IResult<_, _>) input =
+/// <summary>
+/// Alternates between two parsers to produce a list of elements.
+/// </summary>
+/// <param name="sep">Parses the separator between list elements.</param>
+/// <param name="f">Parses the elements of the list.</param>
+let separatedList sep f =
     let rec inner input res = result {
         match sep input with
         | Error (Err (input, _)) ->
@@ -15,16 +20,21 @@ let separatedList (sep: _ -> IResult<_, _>) (f: _ -> IResult<_, _>) input =
                     return! Error (Err (input, SeparatedList))
                 else
                     return! inner i1 (Seq.append res (Seq.singleton o))
-            | Error _ -> return! Ok (input, res)
-    }
+            | Error (Err _) -> return! Ok (input, res)
+            | Error _ -> return! Error (Failure (input, SeparatedList))
+        | Error _ -> return! Error (Failure (input, SeparatedList))}
 
-    match f input with
-    | Ok (i1, o) ->
-        if i1 = input then
-            Error (Err (input, Many))
-        else
-            inner i1 (Seq.singleton o)
-    | Error _ -> Ok (input, Seq.empty)
+    let outer input =
+        match f input with
+        | Ok (i1, o) ->
+            if i1 = input then
+                Error (Err (input, Many))
+            else
+                inner i1 (Seq.singleton o)
+        | Error (Err _) -> Ok (input, Seq.empty)
+        | Error _ -> Error (Failure (input, SeparatedList))
+
+    outer
 
 let many0 (parser: _ -> IResult<_, _>) input =
     let rec inner input res =
