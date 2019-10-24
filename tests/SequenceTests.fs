@@ -2,17 +2,27 @@ module NomFs.Tests.Sequence
 
 open Xunit
 
+open NomFs.Core
 open NomFs.Bytes.Complete
 open NomFs.Sequence
+open NomFs.Tests.Core
 
-let ``test tuple2`` () =
-    let t = tag "foo"
-    let parser = tuple2 (t, t)
+[<Fact>]
+let ``test delimted`` () =
+    let parser = delimited (tag "abc") (tag "|") (tag "efg")
 
-    match parser "foofoo" with 
-    | Ok (input, (t1, t2)) ->
-        Assert.Equal("", input)
-        Assert.Equal("foo", t1)
-        Assert.Equal("foo", t2)
-    | e ->
-        Assert.False(true, (sprintf "Should never happend: %A" e))
+    let (input, res) = extractOk (parser "abc|efg")
+    Assert.Equal("", input)
+    Assert.Equal("|", res)
+
+    let (input, res) = extractOk (parser "abc|efghij")
+    Assert.Equal("hij", input)
+    Assert.Equal("|", res)
+
+    let (input, kind) = extractErr (parser "")
+    Assert.Equal("", input)
+    Assert.Equal(Tag, kind)
+
+    let (input, kind) = extractErr (parser "123")
+    Assert.Equal("123", input)
+    Assert.Equal(Tag, kind)
