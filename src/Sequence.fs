@@ -53,11 +53,12 @@ let tuple5 (t: (T<_, _> * T<_, _> * T<_, _> * T<_, _> * T<_, _>)) =
 /// </summary>
 /// <param name="first">The opening parser.</param>
 /// <param name="second">The second parser to get object.</param>
-let preceded (first: _ -> IResult<_, _>) (second: _ -> IResult<_, _>) =
-    let inner input = result {
-        let! (input, _) = first input
-        return! second input}
-    inner
+let preceded first second =
+    map (tuple2 (first, second)) (fun (_, s) -> s)
+
+/// Gets an object from the first parser, then matches an object from the second parser and discards it.
+let terminated first second =
+    map (tuple2 (first, second)) (fun (f, _) -> f)
 
 /// <summary>
 /// Matches an object from the first parser, then gets an object from the sep_parser,

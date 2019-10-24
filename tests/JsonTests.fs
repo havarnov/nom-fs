@@ -35,9 +35,6 @@ let booleanParser =
             map (tag("false")) (fun _ -> false);
         ]
 
-let delimited pre parser post =
-    map (tuple3 (pre, parser, post)) (fun (_, r, _) -> r)
-
 let rec arrayParser input =
     delimited
         (tag "[")
