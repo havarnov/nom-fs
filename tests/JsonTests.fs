@@ -20,9 +20,10 @@ type JsonValue =
 
 let spaceChars = " \t\r\n" :> char seq
 
-let sp input = takeWhile (fun c -> Seq.contains c spaceChars) input
+let sp = takeWhile (fun c -> Seq.contains c spaceChars)
+let psp p = preceded sp p
 
-let strParser input = escaped alphanumeric1 '\\' (oneOf "\"n\\") input
+let strParser = escaped alphanumeric1 '\\' (oneOf "\"n\\")
 
 let stringParser input = result {
     let! (input, _) = tag "\"" input
@@ -31,27 +32,28 @@ let stringParser input = result {
     return (input, str |> System.String.Concat)
 }
 
-let booleanParser input = alt
-                            (seq {
-                                yield map (tag("true")) (fun _ -> true);
-                                yield map (tag("false")) (fun _ -> false); })
-                            input
+let booleanParser =
+    alt
+        [
+            map (tag("true")) (fun _ -> true);
+            map (tag("false")) (fun _ -> false);
+        ]
 
 let rec arrayParser input = result {
     let! (input, _) = tag "[" input
-    let! (input, values) = separatedList (preceded sp (tag ",")) valueParser input
+    let! (input, values) = separatedList (psp (tag ",")) valueParser input
     let! (input, _) = tag "]" input
     return (input, values)}
 
 and keyValueParser input = result {
-    let! (input, key) = preceded sp stringParser input
-    let! (input, _) = preceded sp (tag ":") input
-    let! (input, value) = preceded sp valueParser input
+    let! (input, key) = psp stringParser input
+    let! (input, _) = psp (tag ":") input
+    let! (input, value) = psp valueParser input
     return (input, (key, value))}
 
 and hashParser input = result {
     let! (input, _) = tag "{" input
-    let! (input, values) = separatedList (preceded sp (tag ",")) keyValueParser input
+    let! (input, values) = separatedList (psp (tag ",")) keyValueParser input
     let! (input, _) = tag "}" input
     return (input, Map.ofSeq values)}
 
@@ -59,22 +61,23 @@ and valueParser input = result {
     let i = preceded
                 sp
                 (alt
-                    (seq {
-                        yield map hashParser Object;
-                        yield map arrayParser Array;
-                        yield map stringParser Str;
-                        yield map double Num;
-                        yield map booleanParser Boolean;
-                    }))
+                    [
+                        map hashParser Object;
+                        map arrayParser Array;
+                        map stringParser Str;
+                        map double Num;
+                        map booleanParser Boolean;
+                    ])
     return! i input}
 
 let root input = result {
     let! (input, _) = sp input
     let! (input, res) =
         alt
-            (seq {
-                yield map arrayParser Array;
-            })
+            [
+                map hashParser Object;
+                map arrayParser Array;
+            ]
             input
     let! (input, _) = sp input
     return (input, res)}
