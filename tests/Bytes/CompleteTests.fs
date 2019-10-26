@@ -1,7 +1,7 @@
 module NomFs.Tests.Bytes.Complete
 
 open System
-open System.Runtime.CompilerServices
+
 open Xunit
 
 open NomFs.Combinator
@@ -11,45 +11,26 @@ open NomFs.Bytes.Complete
 open NomFs.Tests.Core
 open NomFs.Character.Complete
 
-type NomOk<'I, 'O> = {
-    Input: ReadOnlyMemory<'I>;
-    Output: ReadOnlyMemory<'O>}
+let tagMemory (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
+    let inner (input: ReadOnlyMemory<'a>) =
+        if not t.IsEmpty && (t.Span.SequenceEqual(input.Slice(0, t.Length).Span))
+        then
+            Ok (input.Slice(t.Length), t)
+        else
+            Error (Err (input, Tag))
+    inner
 
-type NomError<'I> = {
-    Input: ReadOnlyMemory<'I>;
-    Kind: int;}
-
-type NomResult<'I, 'O> =
-    | NomOk of nomOk: NomOk<'I, 'O>
-    | NomError of nomError: NomError<'I>
-
-let rec eqSpan (a: ReadOnlyMemory<'a>) (b: ReadOnlyMemory<'a>) =
-    if a.IsEmpty && b.IsEmpty then
-        true
-    elif a.IsEmpty || b.IsEmpty then
-        false
-    elif a.Span.[0] = b.Span.[0] then
-        eqSpan (a.Slice(1)) (b.Slice(1))
-    else
-        false
-
-let tagSpan (t: ReadOnlyMemory<'a>) (input: ReadOnlyMemory<'a>) =
-    let x = input.Slice(0, t.Length)
-    if t.Length > 0 && (eqSpan t x)
-    then
-        NomResult.NomOk {Input = input.Slice(t.Length); Output = t; }
-    else
-        NomResult.NomError { Input = input; Kind = 0; }
+let foo i = NomFs.Result.result {
+    let! (input, res) = tagMemory (">".AsMemory()) i
+    let! (input, res) = tagMemory ("<".AsMemory()) i
+    return 0}
 
 [<Fact>]
-let ``test tagSpan`` () =
-    let parser = tagSpan ("Hello".AsMemory())
-    match parser ("Hello, World".AsMemory()) with
-    | NomResult.NomOk { Input = input; Output = res; } ->
-        Assert.True(eqSpan (", World".AsMemory()) input)
-        Assert.True(eqSpan ("Hello".AsMemory()) res)
-    | NomResult.NomError { Input = input; Kind = kind; } ->
-        raise (NotImplementedException "cant happen")
+let ``test tagMemory`` () =
+    let parser = tagMemory ("Hello".AsMemory())
+    let (input, res) = extractOk (parser ("Hello, World".AsMemory()))
+    Assert.True(", World".AsMemory().Span.SequenceEqual(input.Span))
+    Assert.True("Hello".AsMemory().Span.SequenceEqual(res.Span))
 
 [<Fact>]
 let ``escaped test`` () =
