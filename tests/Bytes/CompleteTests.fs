@@ -1,6 +1,7 @@
 module NomFs.Tests.Bytes.Complete
 
 open System
+open System.Runtime.CompilerServices
 open Xunit
 
 open NomFs.Combinator
@@ -9,6 +10,46 @@ open NomFs.Bytes.Complete
 
 open NomFs.Tests.Core
 open NomFs.Character.Complete
+
+type NomOk<'I, 'O> = {
+    Input: ReadOnlyMemory<'I>;
+    Output: ReadOnlyMemory<'O>}
+
+type NomError<'I> = {
+    Input: ReadOnlyMemory<'I>;
+    Kind: int;}
+
+type NomResult<'I, 'O> =
+    | NomOk of nomOk: NomOk<'I, 'O>
+    | NomError of nomError: NomError<'I>
+
+let rec eqSpan (a: ReadOnlyMemory<'a>) (b: ReadOnlyMemory<'a>) =
+    if a.IsEmpty && b.IsEmpty then
+        true
+    elif a.IsEmpty || b.IsEmpty then
+        false
+    elif a.Span.[0] = b.Span.[0] then
+        eqSpan (a.Slice(1)) (b.Slice(1))
+    else
+        false
+
+let tagSpan (t: ReadOnlyMemory<'a>) (input: ReadOnlyMemory<'a>) =
+    let x = input.Slice(0, t.Length)
+    if t.Length > 0 && (eqSpan t x)
+    then
+        NomResult.NomOk {Input = input.Slice(t.Length); Output = t; }
+    else
+        NomResult.NomError { Input = input; Kind = 0; }
+
+[<Fact>]
+let ``test tagSpan`` () =
+    let parser = tagSpan ("Hello".AsMemory())
+    match parser ("Hello, World".AsMemory()) with
+    | NomResult.NomOk { Input = input; Output = res; } ->
+        Assert.True(eqSpan (", World".AsMemory()) input)
+        Assert.True(eqSpan ("Hello".AsMemory()) res)
+    | NomResult.NomError { Input = input; Kind = kind; } ->
+        raise (NotImplementedException "cant happen")
 
 [<Fact>]
 let ``escaped test`` () =
