@@ -15,6 +15,6 @@
     <Compile Include="Number/Complete.fs" />
 
     <Compile Include="Memory/Core.fs" />
-    <Compile Include="Bytes/Memory/Complete.fs" />
+    <Compile Include="Memory/Bytes/Complete.fs" />
   </ItemGroup>
 </Project>

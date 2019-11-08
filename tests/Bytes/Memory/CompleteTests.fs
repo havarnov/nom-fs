@@ -5,7 +5,7 @@ open System
 open Xunit
 
 open NomFs.Core
-open NomFs.Bytes.Memory.Complete
+open NomFs.Memory.Bytes.Complete
 open NomFs.Tests.Core
 open NomFs.Memory.Core
 
