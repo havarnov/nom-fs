@@ -11,27 +11,6 @@ open NomFs.Bytes.Complete
 open NomFs.Tests.Core
 open NomFs.Character.Complete
 
-let tagMemory (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
-    let inner (input: ReadOnlyMemory<'a>) =
-        if not t.IsEmpty && (t.Span.SequenceEqual(input.Slice(0, t.Length).Span))
-        then
-            Ok (input.Slice(t.Length), t)
-        else
-            Error (Err (input, Tag))
-    inner
-
-let foo i = NomFs.Result.result {
-    let! (input, res) = tagMemory (">".AsMemory()) i
-    let! (input, res) = tagMemory ("<".AsMemory()) i
-    return 0}
-
-[<Fact>]
-let ``test tagMemory`` () =
-    let parser = tagMemory ("Hello".AsMemory())
-    let (input, res) = extractOk (parser ("Hello, World".AsMemory()))
-    Assert.True(", World".AsMemory().Span.SequenceEqual(input.Span))
-    Assert.True("Hello".AsMemory().Span.SequenceEqual(res.Span))
-
 [<Fact>]
 let ``escaped test`` () =
     let parser = escaped digit1 '\\' (oneOf @"""n\")

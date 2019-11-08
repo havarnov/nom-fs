@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
@@ -14,6 +14,7 @@
     <Compile Include="Bytes/CompleteTests.fs" />
     <Compile Include="Character/CompleteTests.fs" />
     <Compile Include="Number/CompleteTests.fs" />
+    <Compile Include="Bytes/Memory/CompleteTests.fs" />
     <Compile Include="JsonTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

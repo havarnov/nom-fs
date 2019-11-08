@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>nom_fs</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Result.fs" />
@@ -13,5 +13,8 @@
     <Compile Include="Bytes/Complete.fs" />
     <Compile Include="Character/Complete.fs" />
     <Compile Include="Number/Complete.fs" />
+
+    <Compile Include="Memory/Core.fs" />
+    <Compile Include="Bytes/Memory/Complete.fs" />
   </ItemGroup>
 </Project>
