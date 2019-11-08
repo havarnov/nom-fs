@@ -14,7 +14,7 @@ type TagComparison () =
     let memoryParser = NomFs.Memory.Bytes.Complete.tag ("Hello".AsMemory())
     let spanParser = NomFs.Bytes.Complete.tag "Hello"
 
-    [<Params ("123;")>] 
+    [<Params ("Hello, World", "123;")>] 
     member val public Input = String.Empty with get, set
 
     [<GlobalSetup>]

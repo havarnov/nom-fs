@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Program.TagComparison-20191108-233340</title>
+<title>Program.TagComparison-20191108-233712</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -22,10 +22,12 @@ Intel Core i7-6567U CPU 3.30GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method</th><th>Input</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
+<thead><tr><th>Method</th><th> Input</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Memory</td><td>123;</td><td>19.52 ns</td><td>0.300 ns</td><td>0.281 ns</td><td>0.0306</td><td>-</td><td>-</td><td>64 B</td>
-</tr><tr><td>Span</td><td>123;</td><td>217.43 ns</td><td>2.183 ns</td><td>1.823 ns</td><td>0.1988</td><td>-</td><td>-</td><td>416 B</td>
+</thead><tbody><tr><td>Memory</td><td>123;</td><td>19.84 ns</td><td>0.062 ns</td><td>0.055 ns</td><td>19.84 ns</td><td>0.0306</td><td>-</td><td>-</td><td>64 B</td>
+</tr><tr><td>Span</td><td>123;</td><td>236.53 ns</td><td>5.247 ns</td><td>15.140 ns</td><td>231.38 ns</td><td>0.1988</td><td>-</td><td>-</td><td>416 B</td>
+</tr><tr><td>Memory</td><td>Hello, World</td><td>20.48 ns</td><td>0.442 ns</td><td>0.454 ns</td><td>20.35 ns</td><td>0.0229</td><td>-</td><td>-</td><td>48 B</td>
+</tr><tr><td>Span</td><td>Hello, World</td><td>569.89 ns</td><td>4.289 ns</td><td>3.581 ns</td><td>569.19 ns</td><td>0.3748</td><td>-</td><td>-</td><td>784 B</td>
 </tr></tbody></table>
 </body>
 </html>
