@@ -1,4 +1,4 @@
-module NomFs.Tests.Bytes.Memory.Complete
+module NomFs.Tests.Memory.Bytes.Complete
 
 open System
 
