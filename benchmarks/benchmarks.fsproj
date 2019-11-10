@@ -15,6 +15,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\nom-fs.fsproj" />
+    <ProjectReference Include="..\tests\tests.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="testfiles/*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

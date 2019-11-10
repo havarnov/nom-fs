@@ -13,10 +13,10 @@
     <Compile Include="Bytes/Complete.fs" />
     <Compile Include="Character/Complete.fs" />
     <Compile Include="Number/Complete.fs" />
-
     <Compile Include="Memory/Core.fs" />
     <Compile Include="Memory/ReadOnlyMemory.fs" />
     <Compile Include="Memory/Bytes/Complete.fs" />
     <Compile Include="Memory/Character/Complete.fs" />
+    <Compile Include="Memory/Number/Complete.fs" />
   </ItemGroup>
 </Project>

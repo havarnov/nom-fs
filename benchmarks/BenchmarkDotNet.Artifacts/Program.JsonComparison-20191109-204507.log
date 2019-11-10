@@ -1,0 +1,217 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 2 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+Unable to find .sln file. Will use current directory /Users/havarnov/dev/fsharp/nom-fs/benchmarks to search for project file. If you don't use .sln file on purpose it should not be a problem.
+// start dotnet restore  /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 in /Users/havarnov/dev/fsharp/nom-fs/benchmarks/bin/release/netcoreapp3.0/3859e60d-0af2-458c-abb9-301c0033d016
+// command took 1.74s and exited with 0
+// start dotnet build -c Release  --no-restore /p:UseSharedCompilation=false /p:BuildInParallel=false /m:1 in /Users/havarnov/dev/fsharp/nom-fs/benchmarks/bin/release/netcoreapp3.0/3859e60d-0af2-458c-abb9-301c0033d016
+// command took 11.31s and exited with 0
+// ***** Done, took 00:00:13 (13.16 sec)   *****
+// Found 2 benchmarks:
+//   JsonComparison.Memory: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3) [Input={"foo": "foo"}]
+//   JsonComparison.Span: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3) [Input={"foo": "foo"}]
+
+// **************************
+// Benchmark: JsonComparison.Memory: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3) [Input={"foo": "foo"}]
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet "3859e60d-0af2-458c-abb9-301c0033d016.dll" --benchmarkName "Program+JsonComparison.Memory(Input: "{"foo": "foo"}")" --job "ShortRun" --benchmarkId 0 in /Users/havarnov/dev/fsharp/nom-fs/benchmarks/bin/release/netcoreapp3.0/3859e60d-0af2-458c-abb9-301c0033d016/bin/Release/netcoreapp3.0
+Failed to set up high priority. Make sure you have the right permissions. Message: Permission denied
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// Runtime=.NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT
+// GC=Concurrent Workstation
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 392307.00 ns, 392.3070 us/op
+WorkloadJitting  1: 1 op, 51326539.00 ns, 51.3265 ms/op
+
+WorkloadPilot    1: 2 op, 64137.00 ns, 32.0685 us/op
+WorkloadPilot    2: 3 op, 60652.00 ns, 20.2173 us/op
+WorkloadPilot    3: 4 op, 77235.00 ns, 19.3087 us/op
+WorkloadPilot    4: 5 op, 89023.00 ns, 17.8046 us/op
+WorkloadPilot    5: 6 op, 107970.00 ns, 17.9950 us/op
+WorkloadPilot    6: 7 op, 144432.00 ns, 20.6331 us/op
+WorkloadPilot    7: 8 op, 161540.00 ns, 20.1925 us/op
+WorkloadPilot    8: 9 op, 113524.00 ns, 12.6138 us/op
+WorkloadPilot    9: 10 op, 123550.00 ns, 12.3550 us/op
+WorkloadPilot   10: 11 op, 195179.00 ns, 17.7435 us/op
+WorkloadPilot   11: 12 op, 213611.00 ns, 17.8009 us/op
+WorkloadPilot   12: 13 op, 228078.00 ns, 17.5445 us/op
+WorkloadPilot   13: 14 op, 249706.00 ns, 17.8361 us/op
+WorkloadPilot   14: 15 op, 178552.00 ns, 11.9035 us/op
+WorkloadPilot   15: 16 op, 198614.00 ns, 12.4134 us/op
+WorkloadPilot   16: 32 op, 550232.00 ns, 17.1947 us/op
+WorkloadPilot   17: 64 op, 808703.00 ns, 12.6360 us/op
+WorkloadPilot   18: 128 op, 1541396.00 ns, 12.0422 us/op
+WorkloadPilot   19: 256 op, 3328061.00 ns, 13.0002 us/op
+WorkloadPilot   20: 512 op, 8250800.00 ns, 16.1148 us/op
+WorkloadPilot   21: 1024 op, 10485061.00 ns, 10.2393 us/op
+WorkloadPilot   22: 2048 op, 19460666.00 ns, 9.5023 us/op
+WorkloadPilot   23: 4096 op, 37151222.00 ns, 9.0701 us/op
+WorkloadPilot   24: 8192 op, 69029577.00 ns, 8.4265 us/op
+WorkloadPilot   25: 16384 op, 87884618.00 ns, 5.3641 us/op
+WorkloadPilot   26: 32768 op, 151273432.00 ns, 4.6165 us/op
+WorkloadPilot   27: 65536 op, 304556707.00 ns, 4.6472 us/op
+WorkloadPilot   28: 131072 op, 633612315.00 ns, 4.8341 us/op
+
+WorkloadWarmup   1: 131072 op, 584661469.00 ns, 4.4606 us/op
+WorkloadWarmup   2: 131072 op, 584810174.00 ns, 4.4617 us/op
+WorkloadWarmup   3: 131072 op, 584426569.00 ns, 4.4588 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 131072 op, 584094516.00 ns, 4.4563 us/op
+WorkloadActual   2: 131072 op, 582326657.00 ns, 4.4428 us/op
+WorkloadActual   3: 131072 op, 585840580.00 ns, 4.4696 us/op
+
+// AfterActualRun
+WorkloadResult   1: 131072 op, 584094516.00 ns, 4.4563 us/op
+WorkloadResult   2: 131072 op, 582326657.00 ns, 4.4428 us/op
+WorkloadResult   3: 131072 op, 585840580.00 ns, 4.4696 us/op
+GC:  433 0 0 905969864 131072
+Threading:  2 0 131072
+
+// AfterAll
+// Benchmark Process 28582 has exited with code 0
+
+Mean = 4.4562 us, StdErr = 0.0077 us (0.17%); N = 3, StdDev = 0.0134 us
+Min = 4.4428 us, Q1 = 4.4428 us, Median = 4.4563 us, Q3 = 4.4696 us, Max = 4.4696 us
+IQR = 0.0268 us, LowerFence = 4.4026 us, UpperFence = 4.5098 us
+ConfidenceInterval = [4.2117 us; 4.7008 us] (CI 99.9%), Margin = 0.2446 us (5.49% of Mean)
+Skewness = -0, Kurtosis = 0.67, MValue = 2
+
+// **************************
+// Benchmark: JsonComparison.Span: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3) [Input={"foo": "foo"}]
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet "3859e60d-0af2-458c-abb9-301c0033d016.dll" --benchmarkName "Program+JsonComparison.Span(Input: "{"foo": "foo"}")" --job "ShortRun" --benchmarkId 1 in /Users/havarnov/dev/fsharp/nom-fs/benchmarks/bin/release/netcoreapp3.0/3859e60d-0af2-458c-abb9-301c0033d016/bin/Release/netcoreapp3.0
+Failed to set up high priority. Make sure you have the right permissions. Message: Permission denied
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// Runtime=.NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT
+// GC=Concurrent Workstation
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 397843.00 ns, 397.8430 us/op
+WorkloadJitting  1: 1 op, 53278935.00 ns, 53.2789 ms/op
+
+WorkloadPilot    1: 2 op, 314512.00 ns, 157.2560 us/op
+WorkloadPilot    2: 3 op, 378785.00 ns, 126.2617 us/op
+WorkloadPilot    3: 4 op, 395790.00 ns, 98.9475 us/op
+WorkloadPilot    4: 5 op, 480994.00 ns, 96.1988 us/op
+WorkloadPilot    5: 6 op, 563249.00 ns, 93.8748 us/op
+WorkloadPilot    6: 7 op, 664948.00 ns, 94.9926 us/op
+WorkloadPilot    7: 8 op, 749047.00 ns, 93.6309 us/op
+WorkloadPilot    8: 9 op, 817967.00 ns, 90.8852 us/op
+WorkloadPilot    9: 10 op, 883977.00 ns, 88.3977 us/op
+WorkloadPilot   10: 11 op, 954401.00 ns, 86.7637 us/op
+WorkloadPilot   11: 12 op, 1056021.00 ns, 88.0018 us/op
+WorkloadPilot   12: 13 op, 1166051.00 ns, 89.6962 us/op
+WorkloadPilot   13: 14 op, 1187362.00 ns, 84.8116 us/op
+WorkloadPilot   14: 15 op, 1359280.00 ns, 90.6187 us/op
+WorkloadPilot   15: 16 op, 1332228.00 ns, 83.2643 us/op
+WorkloadPilot   16: 32 op, 3975655.00 ns, 124.2392 us/op
+WorkloadPilot   17: 64 op, 9567778.00 ns, 149.4965 us/op
+WorkloadPilot   18: 128 op, 18650430.00 ns, 145.7065 us/op
+WorkloadPilot   19: 256 op, 32432315.00 ns, 126.6887 us/op
+WorkloadPilot   20: 512 op, 51671287.00 ns, 100.9205 us/op
+WorkloadPilot   21: 1024 op, 66553674.00 ns, 64.9938 us/op
+WorkloadPilot   22: 2048 op, 118649697.00 ns, 57.9344 us/op
+WorkloadPilot   23: 4096 op, 237344357.00 ns, 57.9454 us/op
+WorkloadPilot   24: 8192 op, 479691011.00 ns, 58.5560 us/op
+WorkloadPilot   25: 16384 op, 948914076.00 ns, 57.9171 us/op
+
+WorkloadWarmup   1: 16384 op, 975374894.00 ns, 59.5322 us/op
+WorkloadWarmup   2: 16384 op, 941950179.00 ns, 57.4921 us/op
+WorkloadWarmup   3: 16384 op, 935748717.00 ns, 57.1136 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 16384 op, 946307336.00 ns, 57.7580 us/op
+WorkloadActual   2: 16384 op, 939116884.00 ns, 57.3191 us/op
+WorkloadActual   3: 16384 op, 937677466.00 ns, 57.2313 us/op
+
+// AfterActualRun
+WorkloadResult   1: 16384 op, 946307336.00 ns, 57.7580 us/op
+WorkloadResult   2: 16384 op, 939116884.00 ns, 57.3191 us/op
+WorkloadResult   3: 16384 op, 937677466.00 ns, 57.2313 us/op
+GC:  397 0 0 831782912 16384
+Threading:  2 0 16384
+
+// AfterAll
+// Benchmark Process 28583 has exited with code 0
+
+Mean = 57.4362 us, StdErr = 0.1629 us (0.28%); N = 3, StdDev = 0.2822 us
+Min = 57.2313 us, Q1 = 57.2313 us, Median = 57.3191 us, Q3 = 57.7580 us, Max = 57.7580 us
+IQR = 0.5267 us, LowerFence = 56.4412 us, UpperFence = 58.5481 us
+ConfidenceInterval = [52.2881 us; 62.5842 us] (CI 99.9%), Margin = 5.1481 us (8.96% of Mean)
+Skewness = 0.34, Kurtosis = 0.67, MValue = 2
+
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts/results/Program.JsonComparison-report.csv
+  BenchmarkDotNet.Artifacts/results/Program.JsonComparison-report-github.md
+  BenchmarkDotNet.Artifacts/results/Program.JsonComparison-report.html
+
+// * Detailed results *
+JsonComparison.Memory: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3) [Input={"foo": "foo"}]
+Runtime = .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT; GC = Concurrent Workstation
+Mean = 4.4562 us, StdErr = 0.0077 us (0.17%); N = 3, StdDev = 0.0134 us
+Min = 4.4428 us, Q1 = 4.4428 us, Median = 4.4563 us, Q3 = 4.4696 us, Max = 4.4696 us
+IQR = 0.0268 us, LowerFence = 4.4026 us, UpperFence = 4.5098 us
+ConfidenceInterval = [4.2117 us; 4.7008 us] (CI 99.9%), Margin = 0.2446 us (5.49% of Mean)
+Skewness = -0, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[4.435 us ; 4.478 us) | @@@
+---------------------------------------------------
+
+JsonComparison.Span: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3) [Input={"foo": "foo"}]
+Runtime = .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT; GC = Concurrent Workstation
+Mean = 57.4362 us, StdErr = 0.1629 us (0.28%); N = 3, StdDev = 0.2822 us
+Min = 57.2313 us, Q1 = 57.2313 us, Median = 57.3191 us, Q3 = 57.7580 us, Max = 57.7580 us
+IQR = 0.5267 us, LowerFence = 56.4412 us, UpperFence = 58.5481 us
+ConfidenceInterval = [52.2881 us; 62.5842 us] (CI 99.9%), Margin = 5.1481 us (8.96% of Mean)
+Skewness = 0.34, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[57.060 us ; 57.929 us) | @@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet=v0.12.0, OS=macOS 10.15 (19A602) [Darwin 19.0.0]
+Intel Core i7-6567U CPU 3.30GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=3.0.100
+  [Host]   : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT DEBUG
+  ShortRun : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT
+
+Job=ShortRun  IterationCount=3  LaunchCount=1  
+WarmupCount=3  
+
+| Method |          Input |      Mean |     Error |    StdDev |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------- |--------------- |----------:|----------:|----------:|--------:|------:|------:|----------:|
+| Memory | {"foo": "foo"} |  4.456 us | 0.2446 us | 0.0134 us |  3.3035 |     - |     - |   6.75 KB |
+|   Span | {"foo": "foo"} | 57.436 us | 5.1481 us | 0.2822 us | 24.2310 |     - |     - |  49.58 KB |
+
+// * Legends *
+  Input     : Value of the 'Input' parameter
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  StdDev    : Standard deviation of all measurements
+  Gen 0     : GC Generation 0 collects per 1000 operations
+  Gen 1     : GC Generation 1 collects per 1000 operations
+  Gen 2     : GC Generation 2 collects per 1000 operations
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 us      : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+// ** Remained 0 benchmark(s) to run **
+Run time: 00:00:15 (15.32 sec), executed benchmarks: 2
+
+Global total time: 00:00:28 (28.49 sec), executed benchmarks: 2
+// * Artifacts cleanup *

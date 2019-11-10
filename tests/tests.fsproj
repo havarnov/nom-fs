@@ -16,7 +16,8 @@
     <Compile Include="Number/CompleteTests.fs" />
     <Compile Include="Memory/Bytes/CompleteTests.fs" />
     <Compile Include="JsonTests.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="MemoryJsonTest.fs" />
+    <Compile Include="ProgramTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +29,12 @@
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../benchmarks/testfiles/*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

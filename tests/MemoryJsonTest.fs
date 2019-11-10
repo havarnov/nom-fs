@@ -1,14 +1,15 @@
-module NomFs.Tests.Json
+module NomFs.Memory.Tests.Json
 
 open Xunit
 
-open NomFs.Bytes.Complete
-open NomFs.Character.Complete
+open NomFs.Memory.Bytes.Complete
+open NomFs.Memory.Character.Complete
 open NomFs.Combinator
 open NomFs.Branch
 open NomFs.Multi
-open NomFs.Number.Complete
+open NomFs.Memory.Number.Complete
 open NomFs.Sequence
+open NomFs.Memory.Core
 
 type JsonValue =
     | Str of string
@@ -17,29 +18,29 @@ type JsonValue =
     | Array of JsonValue seq
     | Object of Map<string, JsonValue>
 
-let spaceChars = " \t\r\n" :> char seq
+let spaceChars = m " \t\r\n"
 
-let sp = takeWhile (fun c -> Seq.contains c spaceChars)
+let sp = takeWhile (fun c -> NomFs.Memory.ReadOnlyMemory.contains c spaceChars)
 let psp p = preceded sp p
 
-let strParser = escaped alphanumeric1 '\\' (oneOf "\"n\\")
+let strParser = escaped alphanumeric1 '\\' (oneOf (m "\"n\\"))
 
 let stringParser =
-    let bs = tag "\""
+    let bs = tag (m "\"")
     map (tuple3 (bs, strParser, bs)) (fun (_, str, _) -> str |> System.String.Concat)
 
 let booleanParser =
     alt
         [
-            map (tag("true")) (fun _ -> true);
-            map (tag("false")) (fun _ -> false);
+            map (tag (m "true")) (fun _ -> true);
+            map (tag (m "false")) (fun _ -> false);
         ]
 
 let rec arrayParser input =
     delimited
-        (tag "[")
-        (separatedList (psp (tag ",")) valueParser)
-        (tag "]")
+        (tag (m "["))
+        (separatedList (psp (tag (m ","))) valueParser)
+        (tag (m "]"))
         input
 
 and keyValueParser input =
@@ -47,14 +48,14 @@ and keyValueParser input =
         (tuple3
             (
                 (psp stringParser),
-                (psp (tag ":")),
+                (psp (tag (m ":"))),
                 (psp valueParser)))
         (fun (key, _, value) -> (key, value))
         input
 
 and hashParser =
     map
-        (delimited (tag "{") (separatedList (psp (tag ",")) keyValueParser) (tag "}"))
+        (delimited (tag (m "{")) (separatedList (psp (tag (m ","))) keyValueParser) (tag (m "}")))
         Map.ofSeq
 
 and valueParser input =
@@ -83,7 +84,7 @@ let root =
 
 [<Fact>]
 let ``json true test`` () =
-    let j = """
+    let j = m """
     
     
     
@@ -97,7 +98,7 @@ let ``json true test`` () =
 
 [<Fact>]
 let ``json str test`` () =
-    let j = """
+    let j = m """
     
     
     
@@ -111,7 +112,7 @@ let ``json str test`` () =
 
 [<Fact>]
 let ``json array test`` () =
-    let j = """
+    let j = m  """
     
     [
 
@@ -131,7 +132,8 @@ let ``json array test`` () =
 
     """
     printfn "%A" (root j)
-    
+
     let jsonStr = System.IO.File.ReadAllText(System.IO.Path.Join(System.AppContext.BaseDirectory, "basic.json"));
-    printfn "foobar: %A" (root jsonStr)
+    printfn "joho: %A" (root (m jsonStr))
+
     0

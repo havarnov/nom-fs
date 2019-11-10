@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Program.JsonComparison-20191109-213041</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.12.0, OS=macOS 10.15 (19A602) [Darwin 19.0.0]
+Intel Core i7-6567U CPU 3.30GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=3.0.100
+  [Host]     : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT DEBUG
+  DefaultJob : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), X64 RyuJIT
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>Input</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>Memory</td><td>basic.json</td><td>92.734 us</td><td>0.9113 us</td><td>0.7610 us</td><td>26.3672</td><td>-</td><td>-</td><td>53.93 KB</td>
+</tr><tr><td>Seq</td><td>basic.json</td><td>3.601 us</td><td>0.0344 us</td><td>0.0305 us</td><td>1.0910</td><td>-</td><td>-</td><td>2.23 KB</td>
+</tr><tr><td>Memory</td><td>large.json</td><td>2.993 us</td><td>0.0132 us</td><td>0.0117 us</td><td>1.0109</td><td>-</td><td>-</td><td>2.07 KB</td>
+</tr><tr><td>Seq</td><td>large.json</td><td>3.612 us</td><td>0.0320 us</td><td>0.0267 us</td><td>1.0910</td><td>-</td><td>-</td><td>2.23 KB</td>
+</tr></tbody></table>
+</body>
+</html>

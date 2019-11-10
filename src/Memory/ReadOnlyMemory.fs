@@ -5,7 +5,7 @@ open System
 let takeWhile (predicate: 'a -> bool) (source: ReadOnlyMemory<'a>) =
     let mutable splitAt = None
     let mutable current = 0
-    while Option.isNone splitAt do
+    while Option.isNone splitAt && current < source.Length do
         if not (predicate source.Span.[current])
         then
             splitAt <- Some current
