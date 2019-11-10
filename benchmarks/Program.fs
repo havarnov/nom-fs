@@ -12,7 +12,7 @@ type JsonComparison () =
     let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
     let mutable inputAsString: string = String.Empty
 
-    [<Params ("basic.json", "large.json")>] 
+    [<Params ("basic.json")>] 
     member val public Input = String.Empty with get, set
 
     [<GlobalSetup>]
@@ -23,10 +23,20 @@ type JsonComparison () =
         ()
 
     [<Benchmark>]
-    member self.Memory() = NomFs.Memory.Tests.Json.root inputAsMemory
+    member self.Memory() =
+        match NomFs.Memory.Tests.Json.root inputAsMemory with
+        | Ok (_, NomFs.Memory.Tests.Json.JsonValue.Object o) ->
+            let c = o.Count
+            ()
+        | _ -> raise (Exception "foo")
 
     [<Benchmark>]
-    member self.Seq() = NomFs.Tests.Json.root (self.Input) 
+    member self.Seq() =
+        match NomFs.Tests.Json.root inputAsString with
+        | Ok (_, NomFs.Tests.Json.JsonValue.Object o) ->
+            let c = o.Count
+            ()
+        | _ -> raise (Exception "foo")
 
 [<MemoryDiagnoser>]
 type TagComparison () =
