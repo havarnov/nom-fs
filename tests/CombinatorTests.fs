@@ -7,55 +7,48 @@ open NomFs.Character.Complete
 open NomFs.Tests.Core
 open System
 open NomFs.Core
+open NomFs.ReadOnlyMemory
 
 [<Fact>]
 let ``opt test`` () =
     let parser input = opt digit1 input
 
-    let (input, res) = extractOk (parser "12345abc")
-    Assert.Equal("abc", input)
-    Assert.Equal("12345", res.Value)
+    let (input, res) = extractOk (parser (m "12345abc"))
+    Assert.True(sequenceEqual (m "abc") input)
+    Assert.True(sequenceEqual (m "12345") res.Value)
 
-    let (input, res) = extractOk (parser "abc123456")
-    Assert.Equal("abc123456", input)
+    let (input, res) = extractOk (parser (m "abc123456"))
+    Assert.True(sequenceEqual (m "abc123456") input)
     Assert.Equal(None, res)
 
 [<Fact>]
 let ``map test`` () =
-    let parser = map digit1 (fun d -> d |> Seq.length)
+    let parser = map digit1 (fun d -> d.Length)
 
-    let (input, res) = extractOk (parser "1248abc")
-    Assert.Equal("abc", input)
+    let (input, res) = extractOk (parser (m "1248abc"))
+    Assert.True(sequenceEqual (m "abc") input)
     Assert.Equal(4, res)
     
 [<Fact>]
 let ``mapRes test`` () =
 
-    let parseByte (str: char seq) =
+    let parseByte (str: ReadOnlyMemory<char>) =
         try
-            Ok (Convert.ToByte (str |> Seq.toArray |> String))
+            Ok (Convert.ToByte (str.ToString()))
         with
-            | e ->
-            printfn "%A" e
+        | e ->
             Error e.Message
 
     let parser = mapRes digit1 parseByte
 
-    match parser "123" with
-    | Ok (input, b) ->
-        Assert.Equal(123uy, b)
-        Assert.Equal("", input)
-    | e ->
-        Assert.False(true, (sprintf "Should never happend: %A" e))
+    let (input, res) = extractOk (parser (m "123"))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
+    Assert.Equal(123uy, res)
 
-    match parser "abc" with
-    | Error (Err (input, Digit)) ->
-        Assert.Equal("abc", input)
-    | e ->
-        Assert.False(true, (sprintf "Should never happend: %A" e))
+    let (input, kind) = extractErr (parser (m "abc"))
+    Assert.True(sequenceEqual (m "abc") input)
+    Assert.Equal(Digit, kind)
 
-    match parser "123456" with
-    | Error (Err (input, MapRes)) ->
-        Assert.Equal("123456", input)
-    | e ->
-        Assert.False(true, (sprintf "Should never happend: %A" e))
+    let (input, kind) = extractErr (parser (m "123456"))
+    Assert.True(sequenceEqual (m "123456") input)
+    Assert.Equal(MapRes, kind)

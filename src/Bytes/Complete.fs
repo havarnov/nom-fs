@@ -1,97 +1,74 @@
 module NomFs.Bytes.Complete
 
+open System
+
 open NomFs.Core
 
-let escaped
-    (normal: seq<char> -> IResult<seq<char>, seq<char>>)
-    (controlChar: char)
-    (escapable: seq<char> -> IResult<seq<char>, char>) =
-    let tryTakeEscaped (input: seq<char>) =
-        let c = Seq.head input
-        if c = controlChar
+let inline tag (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
+    let inner (input: ReadOnlyMemory<'a>) =
+        if not t.IsEmpty
+           && input.Length >= t.Length
+           && (t.Span.SequenceEqual(input.Slice(0, t.Length).Span))
         then
-            escapable (input |> Seq.skip 1)
-            |> Result.map (fun (input, escapedChar) ->
-                input, seq { yield controlChar; yield escapedChar; })
+            Ok (input.Slice(t.Length), t)
+        else
+            Error (Err (input, Tag))
+    inner
+
+let escaped
+    (normal: ReadOnlyMemory<'a> -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>>)
+    (controlChar: 'a)
+    (escapable: ReadOnlyMemory<'a> -> IResult<ReadOnlyMemory<'a>, 'a>) =
+
+    let tryTakeEscaped (input: ReadOnlyMemory<'a>) =
+        if input.Length > 0 && input.Span.[0] = controlChar
+        then
+            escapable (input.Slice(1))
+            |> Result.map (fun (inputi, escapedChar) ->
+                // inputi, ReadOnlyMemory([|controlChar; escapedChar|]))
+                inputi, input.Slice(0, 2))
         else
             Error (Err (input, Escape))
 
     let rec inner input =
         match normal input with
-        | Ok (input, res) when Seq.isEmpty input || (Seq.head input) <> controlChar ->
+        | Ok (input, res) when input.IsEmpty || input.Span.[0] <> controlChar ->
             Ok (input, res)
-        | Ok (input, res) ->
-            match tryTakeEscaped input with
-            | Ok (input, escapedSeq) ->
-                let res = Seq.append res escapedSeq
-                inner input
+        | Ok (inputi, res) ->
+            match tryTakeEscaped inputi with
+            | Ok (inputii, escapedSeq) ->
+                // let res = concat res escapedSeq
+                let res = input.Slice(0, res.Length + escapedSeq.Length)
+                inner inputii
                 |> Result.map (fun (innerInput, innerRes) ->
-                    (innerInput, Seq.append res innerRes))
+                    // (innerInput, concat res innerRes))
+                    (innerInput, input.Slice(0, res.Length + innerRes.Length)))
             | Error e -> Error e
         | Error e -> Error e
 
     inner
 
-let tag (t: _ seq) =
-    let inner (input: 'T seq) : IResult<_, _> =
-        if input |> Seq.length < 1
-        then
-            Error (Err (input, Tag))
-        elif
-            input
-            |> Seq.zip t
-            |> Seq.forall (fun (x, y) -> x = y)
-        then
-            let rest =
-                input
-                |> Seq.skip (Seq.length t)
-            Ok (rest, t)
-        else
-            Error (Err (input, Tag))
-    inner
-
 let take count =
-    let inner input =
-        if input |> Seq.length < count then
+    let inner (input: ReadOnlyMemory<'a>) =
+        if input.Length < count then
             Error (Err (input, Eof))
         else
-            let res = input |> Seq.take count
-            let rest = input |>Seq.skip count
-            Ok (rest, res)
+            Ok (input.Slice(count), input.Slice(0, count))
     inner
 
-let takeWhile predicate : (_ -> IResult<_, _>) =
-    let inner input =
-        let res =
-            input
-            |> Seq.takeWhile predicate
-        let rest =
-            input
-            |> Seq.skipWhile predicate
-        Ok (rest, res)
+let takeWhile predicate =
+    let inner (input: ReadOnlyMemory<'a>) =
+        let res = NomFs.ReadOnlyMemory.takeWhile predicate input
+        Ok (input.Slice(res.Length), res)
     inner
 
-let takeWhileMN m n f : ('a -> IResult<'a, 'a>) =
-    let inner input =
-        let res =
-            input
-            |> Seq.takeWhile f
-        let l = res |> Seq.length
-        if m <= l && l <= n
-        then
-            let rest =
-                input
-                |> Seq.skip (Seq.length res)
-            Ok (rest, res)
-        elif m <= l
-        then
-            let res =
-                input
-                |> Seq.take n
-            let rest =
-                input
-                |> Seq.skip n
-            Ok (rest, res)
+let takeWhileMN m n f =
+    let inner (input: ReadOnlyMemory<'a>) =
+        let res = input |> NomFs.ReadOnlyMemory.takeWhile f
+        if m <= res.Length && res.Length <= n then
+            Ok (input.Slice(res.Length), res)
+        elif m <= res.Length then
+            Ok (input.Slice(n), input.Slice(0, n))
         else
             Error (Err (input, TakeWhileMN))
     inner

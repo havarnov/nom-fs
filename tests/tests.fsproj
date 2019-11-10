@@ -14,9 +14,7 @@
     <Compile Include="Bytes/CompleteTests.fs" />
     <Compile Include="Character/CompleteTests.fs" />
     <Compile Include="Number/CompleteTests.fs" />
-    <Compile Include="Memory/Bytes/CompleteTests.fs" />
-    <Compile Include="JsonTests.fs" />
-    <Compile Include="MemoryJsonTest.fs" />
+    <Compile Include="JsonTest.fs" />
     <Compile Include="ProgramTests.fs" />
   </ItemGroup>
 

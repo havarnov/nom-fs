@@ -7,6 +7,7 @@ open NomFs.Core
 open NomFs.Result
 open NomFs.Bytes.Complete
 open NomFs.Combinator
+open NomFs.ReadOnlyMemory
 
 let extractOk res =
     match res with
@@ -18,7 +19,6 @@ let extractErr res =
     | Error (Err e) -> e
     | e -> failwithf "Should never happen: %A" e
 
-
 type Color = {
     Red: byte;
     Green: byte;
@@ -28,9 +28,9 @@ type Color = {
 [<Fact>]
 let ``color test`` () =
 
-    let fromHex i =
+    let fromHex (i: ReadOnlyMemory<char>) =
         try
-            let i = i |> Seq.toArray |> String
+            let i = i.ToString()
             Ok (Convert.ToByte(i, 16))
         with
             | e -> Error e
@@ -43,18 +43,18 @@ let ``color test`` () =
         mapRes (takeWhileMN 2 2 isHexDigit) fromHex
 
     let hexColor input = result {
-        let! input, _ = tag "#" input
+        let! input, _ = tag (m "#") input
         let! input, red = hexPrimary input
         let! input, green = hexPrimary input
         let! input, blue = hexPrimary input
 
         return! Ok (input, { Red = red; Green = green; Blue = blue; })}
 
-    let c = hexColor "#2F14DF"
+    let c = hexColor (m "#2F14DF")
 
     match c with
     | Ok (input, co) ->
-        Assert.Equal("", input)
+        Assert.True(sequenceEqual (m "") input)
         Assert.Equal(47uy, co.Red)
         Assert.Equal(20uy, co.Green)
         Assert.Equal(223uy, co.Blue)

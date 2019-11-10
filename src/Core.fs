@@ -28,3 +28,7 @@ type ErrorKind =
     | Float
 
 type IResult<'I, 'O> = Result<'I * 'O, Err<'I * ErrorKind>>
+
+let inline m (str: string) = str.AsMemory()
+
+let inline a (i: 'a array) = ReadOnlyMemory(i)

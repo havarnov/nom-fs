@@ -4,52 +4,44 @@ open System
 
 open NomFs.Core
 
-let alphanumeric1 input =
-    let isAlphanumeric c = Char.IsDigit c || Char.IsLetter c
+open NomFs.ReadOnlyMemory
+
+let digit1 (input: ReadOnlyMemory<_>): IResult<ReadOnlyMemory<_>, ReadOnlyMemory<_>> =
     let res =
         input
-        |> Seq.takeWhile isAlphanumeric
-    if res |> Seq.isEmpty
+        |> takeWhile Char.IsDigit
+    if res.Length > 0
     then
-        Error (Err (input, Alphanumeric))
-    else
         let rest =
-            input
-            |> Seq.skip (Seq.length res)
+            input.Slice(res.Length)
         Ok (rest, res)
+    else
+        Error (Err (input, Digit))
 
-let oneOf list : ('a seq -> IResult<'a seq, 'a>) =
-    let inner input =
-        match Seq.tryHead input with
-        | Some head when list |> Seq.contains head ->
-            Ok (Seq.tail input, head)
-        | _ ->
+let oneOf list =
+    let inner (input: ReadOnlyMemory<_>) =
+        if input.Length > 0 && contains (input.Span.[0]) list
+        then
+            Ok (input.Slice(1), input.Span.[0])
+        else
             Error (Err (input, OneOf))
 
     inner
 
-let alpha1 input =
-    let res =
-        input
-        |> Seq.takeWhile Char.IsLetter
-    if res |> Seq.length > 0
-    then
-        let rest =
-            input
-            |> Seq.skip (Seq.length res)
-        Ok (rest, res)
-    else
-        Error (Err (input, Alpha))
+let alphanumeric1 =
+    let inline inner (input: ReadOnlyMemory<_>) =
+        let res = input |> takeWhile Char.IsLetterOrDigit 
+        if res.IsEmpty then
+            Error (Err (input, Alphanumeric))
+        else
+            Ok (input.Slice(res.Length), res)
+    inner
 
-let digit1 input =
-    let res =
-        input
-        |> Seq.takeWhile Char.IsDigit
-    if res |> Seq.length > 0
-    then
-        let rest =
-            input
-            |> Seq.skip (Seq.length res)
-        Ok (rest, res)
-    else
-        Error (Err (input, Digit))
+let alpha1 =
+    let inline inner (input: ReadOnlyMemory<_>) =
+        let res = input |> takeWhile Char.IsLetter
+        if res.IsEmpty then
+            Error (Err (input, Alphanumeric))
+        else
+            Ok (input.Slice(res.Length), res)
+    inner

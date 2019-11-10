@@ -1,15 +1,16 @@
-module NomFs.Memory.Tests.Json
+module NomFs.Tests.Json
 
 open Xunit
 
-open NomFs.Memory.Bytes.Complete
-open NomFs.Memory.Character.Complete
+open NomFs.Bytes.Complete
+open NomFs.Character.Complete
 open NomFs.Combinator
 open NomFs.Branch
 open NomFs.Multi
-open NomFs.Memory.Number.Complete
+open NomFs.Number.Complete
 open NomFs.Sequence
-open NomFs.Memory.Core
+open NomFs.Core
+open System
 
 type JsonValue =
     | Str of string
@@ -20,7 +21,7 @@ type JsonValue =
 
 let spaceChars = m " \t\r\n"
 
-let sp = takeWhile (fun c -> NomFs.Memory.ReadOnlyMemory.contains c spaceChars)
+let sp = takeWhile (fun c -> NomFs.ReadOnlyMemory.contains c spaceChars)
 let psp p = preceded sp p
 
 let strParser = escaped alphanumeric1 '\\' (oneOf (m "\"n\\"))
@@ -93,8 +94,10 @@ let ``json true test`` () =
 
 
     """
-    printfn "%A" (valueParser j)
-    0
+
+    match valueParser j with
+    | Ok (_, Boolean b) -> Assert.True(b)
+    | _ -> Assert.True(false, "Should never happend")
 
 [<Fact>]
 let ``json str test`` () =
@@ -107,8 +110,9 @@ let ``json str test`` () =
 
 
     """
-    printfn "%A" (valueParser j)
-    0
+    match valueParser j with
+    | Ok (_, Str s) -> Assert.Equal("foobar", s)
+    | _ -> Assert.True(false, "Should never happend")
 
 [<Fact>]
 let ``json array test`` () =
@@ -121,7 +125,8 @@ let ``json array test`` () =
         {
             "ball": true,
             "snall": "hav",
-            "ja": 1234.123e-12,
+            "ja":     1234.123e-12,
+
             "nei": 1234.123E+12
         },
 
@@ -131,9 +136,17 @@ let ``json array test`` () =
 
 
     """
-    printfn "%A" (root j)
-
-    let jsonStr = System.IO.File.ReadAllText(System.IO.Path.Join(System.AppContext.BaseDirectory, "basic.json"));
-    printfn "joho: %A" (root (m jsonStr))
-
-    0
+    match root j with
+    | Ok (_, Array a) ->
+        Assert.Equal(3, Seq.length a)
+        let s = Seq.filter (fun i -> match i with | Str i -> i = "foo" | _ -> false) a
+        let _ = Assert.Single(s)
+        let b = Seq.filter (fun i -> match i with | Boolean b -> not b | _ -> false) a
+        let _ = Assert.Single(b)
+        let o = Seq.filter (fun i -> match i with | Object _ -> true | _ -> false) a
+        let o = match Assert.Single(o) with | Object o -> o | _ -> raise (Exception "should never happen")
+        Assert.Equal(Boolean true, o.Item "ball")
+        Assert.Equal(Str "hav", o.Item "snall")
+        Assert.Equal(Num 1234.123e-12, o.Item "ja")
+        Assert.Equal(Num 1234.123e+12, o.Item "nei")
+    | _ -> Assert.True(false, "Should never happend")

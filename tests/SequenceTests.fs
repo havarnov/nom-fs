@@ -6,67 +6,69 @@ open NomFs.Core
 open NomFs.Bytes.Complete
 open NomFs.Sequence
 open NomFs.Tests.Core
+open NomFs.ReadOnlyMemory
+open System
 
 [<Fact>]
 let ``test terminated`` () =
-    let parser = terminated (tag "abc") (tag "efg")
+    let parser = terminated (tag (m "abc")) (tag (m "efg"))
 
-    let (input, res) = extractOk (parser "abcefg")
-    Assert.Equal("", input)
-    Assert.Equal("abc", res)
+    let (input, res) = extractOk (parser (m "abcefg"))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
+    Assert.True(sequenceEqual (m "abc") res)
 
-    let (input, res) = extractOk (parser "abcefghij")
-    Assert.Equal("hij", input)
-    Assert.Equal("abc", res)
+    let (input, res) = extractOk (parser (m "abcefghij"))
+    Assert.True(sequenceEqual (m "hij") input)
+    Assert.True(sequenceEqual (m "abc") res)
 
-    let (input, kind) = extractErr (parser "")
-    Assert.Equal("", input)
+    let (input, kind) = extractErr (parser (m ""))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     Assert.Equal(Tag, kind)
 
-    let (input, kind) = extractErr (parser "123")
-    Assert.Equal("123", input)
+    let (input, kind) = extractErr (parser (m "123"))
+    Assert.True(sequenceEqual (m "123") input)
     Assert.Equal(Tag, kind)
 
 [<Fact>]
 let ``test separatedPair`` () =
-    let parser = separatedPair (tag "abc") (tag "|") (tag "efg")
+    let parser = separatedPair (tag (m "abc")) (tag (m "|")) (tag (m "efg"))
 
-    let (input, res) = extractOk (parser "abc|efg")
-    Assert.Equal("", input)
+    let (input, res) = extractOk (parser (m "abc|efg"))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     let (f, s) = res
-    Assert.Equal("abc", f)
-    Assert.Equal("efg", s)
+    Assert.True(sequenceEqual (m "abc") f)
+    Assert.True(sequenceEqual (m "efg") s)
 
-    let (input, res) = extractOk (parser "abc|efghij")
-    Assert.Equal("hij", input)
+    let (input, res) = extractOk (parser (m "abc|efghij"))
+    Assert.True(sequenceEqual (m "hij") input)
     let (f, s) = res
-    Assert.Equal("abc", f)
-    Assert.Equal("efg", s)
+    Assert.True(sequenceEqual (m "abc") f)
+    Assert.True(sequenceEqual (m "efg") s)
 
-    let (input, kind) = extractErr (parser "")
-    Assert.Equal("", input)
+    let (input, kind) = extractErr (parser (m ""))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     Assert.Equal(Tag, kind)
 
-    let (input, kind) = extractErr (parser "123")
-    Assert.Equal("123", input)
+    let (input, kind) = extractErr (parser (m "123"))
+    Assert.True(sequenceEqual (m "123") input)
     Assert.Equal(Tag, kind)
 
 [<Fact>]
 let ``test delimted`` () =
-    let parser = delimited (tag "abc") (tag "|") (tag "efg")
+    let parser = delimited (tag (m "abc")) (tag (m "|")) (tag (m "efg"))
 
-    let (input, res) = extractOk (parser "abc|efg")
-    Assert.Equal("", input)
-    Assert.Equal("|", res)
+    let (input, res) = extractOk (parser (m "abc|efg"))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
+    Assert.True(sequenceEqual (m "|") res)
 
-    let (input, res) = extractOk (parser "abc|efghij")
-    Assert.Equal("hij", input)
-    Assert.Equal("|", res)
+    let (input, res) = extractOk (parser (m "abc|efghij"))
+    Assert.True(sequenceEqual (m "hij") input)
+    Assert.True(sequenceEqual (m "|") res)
 
-    let (input, kind) = extractErr (parser "")
-    Assert.Equal("", input)
+    let (input, kind) = extractErr (parser (m ""))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     Assert.Equal(Tag, kind)
 
-    let (input, kind) = extractErr (parser "123")
-    Assert.Equal("123", input)
+    let (input, kind) = extractErr (parser (m "123"))
+    Assert.True(sequenceEqual (m "123") input)
     Assert.Equal(Tag, kind)

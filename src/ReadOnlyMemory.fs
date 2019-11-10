@@ -1,6 +1,18 @@
-module NomFs.Memory.ReadOnlyMemory
+module NomFs.ReadOnlyMemory
 
 open System
+
+let sequenceEqual (a: ReadOnlyMemory<'a>) (b: ReadOnlyMemory<'a>) =
+    if a.Length <> b.Length then
+        false
+    else
+        let mutable isEqual = true
+        for i in 0..(a.Length - 1) do
+            if a.Span.[i] <> b.Span.[i] then
+                isEqual <- false
+                // TODO: optimize by early return
+    
+        isEqual
 
 let takeWhile (predicate: 'a -> bool) (source: ReadOnlyMemory<'a>) =
     let mutable splitAt = None

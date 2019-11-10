@@ -4,35 +4,37 @@ open Xunit
 
 open NomFs.Core
 open NomFs.Character.Complete
+open NomFs.ReadOnlyMemory
 
 open NomFs.Tests.Core
+open System
 
 [<Fact>]
 let ``alphanumeric test`` () =
-    let (input, res) = extractOk (alphanumeric1 "21cZ%1")
-    Assert.Equal("%1", input)
-    Assert.Equal("21cZ", res)
+    let (input, res) = extractOk (alphanumeric1 (m "21cZ%1"))
+    Assert.True(sequenceEqual (m "%1") input)
+    Assert.True(sequenceEqual (m "21cZ") res)
 
-    let (input, kind) = extractErr (alphanumeric1 "&H")
-    Assert.Equal("&H", input)
+    let (input, kind) = extractErr (alphanumeric1 (m "&H"))
+    Assert.True(sequenceEqual (m "&H") input)
     Assert.Equal(Alphanumeric, kind)
 
-    let (input, kind) = extractErr (alphanumeric1 "")
-    Assert.Equal("", input)
+    let (input, kind) = extractErr (alphanumeric1 (m ""))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     Assert.Equal(Alphanumeric, kind)
 
 [<Fact>]
 let ``oneof test`` () =
-    let (input, res) = extractOk (oneOf "abc" "b")
-    Assert.Equal("", input)
+    let (input, res) = extractOk (oneOf (m "abc") (m "b"))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     Assert.Equal('b', res)
 
-    let (input, kind) = extractErr (oneOf "a" "bc")
-    Assert.Equal("bc", input)
+    let (input, kind) = extractErr (oneOf (m "a") (m "bc"))
+    Assert.True(sequenceEqual (m "bc") input)
     Assert.Equal(OneOf, kind)
 
-    let (input, kind) = extractErr (oneOf "a" "")
-    Assert.Equal("", input)
+    let (input, kind) = extractErr (oneOf (m "a") (m ""))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
     Assert.Equal(OneOf, kind)
 
 [<Fact>]
@@ -40,21 +42,14 @@ let ``digit test`` () =
 
     let parser i = digit1 i
 
-    match parser "21c" with
-    | Ok (input, d) ->
-        Assert.Equal("21", d)
-        Assert.Equal("c", input)
-    | _ -> 
-        Assert.False(true, "Should never happend")
+    let (input, res) = extractOk (parser (m "21c"))
+    Assert.True(sequenceEqual (m "c") input)
+    Assert.True(sequenceEqual (m "21") res)
 
-    match parser "c1" with
-    | Error (Err (input, Digit)) ->
-        Assert.Equal("c1", input)
-    | _ -> 
-        Assert.False(true, "Should never happend")
+    let (input, kind) = extractErr (parser (m "c1"))
+    Assert.True(sequenceEqual (m "c1") input)
+    Assert.Equal(Digit, kind)
 
-    match parser "" with
-    | Error (Err (input, Digit)) ->
-        Assert.Equal("", input)
-    | _ -> 
-        Assert.False(true, "Should never happend")
+    let (input, kind) = extractErr (parser (m ""))
+    Assert.True(sequenceEqual ReadOnlyMemory.Empty input)
+    Assert.Equal(Digit, kind)
