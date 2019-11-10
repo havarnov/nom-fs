@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\nom-fs.fsproj" />
+    <ProjectReference Include="..\examples\examples.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

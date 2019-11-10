@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\src\nom-fs.fsproj" />
     <ProjectReference Include="..\tests\tests.fsproj" />
+    <ProjectReference Include="..\examples\examples.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

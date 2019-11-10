@@ -21,7 +21,7 @@ type JsonComparison () =
         ()
 
     [<Benchmark>]
-    member self.Memory() = NomFs.Tests.Json.root inputAsMemory
+    member self.Memory() = NomFs.Examples.Json.parser inputAsMemory
 
 
 [<MemoryDiagnoser>]

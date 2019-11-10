@@ -10,4 +10,4 @@ Intel Core i7-6567U CPU 3.30GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
 ```
 | Method |      Input |     Mean |    Error |   StdDev |   Gen 0 | Gen 1 | Gen 2 | Allocated |
 |------- |----------- |---------:|---------:|---------:|--------:|------:|------:|----------:|
-| Memory | basic.json | 44.75 us | 1.675 us | 4.640 us | 26.3672 |     - |     - |  53.95 KB |
+| Memory | basic.json | 39.08 us | 0.690 us | 0.612 us | 26.3672 |     - |     - |  53.95 KB |
