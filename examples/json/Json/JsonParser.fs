@@ -10,6 +10,7 @@ open NomFs.Sequence
 open NomFs.Core
 
 type JsonValue =
+    | Null
     | Str of string
     | Boolean of bool
     | Num of float
@@ -27,12 +28,9 @@ let stringParser =
     let bs = tag (m "\"")
     map (tuple3 (bs, strParser, bs)) (fun (_, str, _) -> str |> System.String.Concat)
 
-let booleanParser =
-    alt
-        [
-            map (tag (m "true")) (fun _ -> true);
-            map (tag (m "false")) (fun _ -> false);
-        ]
+let jtrue = map (tag (m "true")) (fun _ -> Boolean true);
+let jfalse = map (tag (m "false")) (fun _ -> Boolean false);
+let jnull = map (tag (m "null")) (fun _ -> Null)
 
 let rec arrayParser input =
     delimited
@@ -60,11 +58,13 @@ and valueParser input =
     psp (
         alt
             [
+                jtrue;
+                jfalse;
+                jnull
                 map hashParser Object;
                 map arrayParser Array;
                 map stringParser Str;
                 map double Num;
-                map booleanParser Boolean;
             ])
         input
 
