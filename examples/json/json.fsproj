@@ -7,11 +7,11 @@
 
   <ItemGroup>
     <Compile Include="Json/JsonParser.fs" />
-    <Compile Include="ProgramExamples.fs" />
+    <Compile Include="ProgramJson.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\nom-fs.fsproj" />
+    <ProjectReference Include="..\..\src\nom-fs.fsproj" />
   </ItemGroup>
 
 </Project>
