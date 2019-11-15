@@ -54,6 +54,18 @@ and hashParser =
         (delimited (tag (m "{")) (separatedList (psp (tag (m ","))) keyValueParser) (tag (m "}")))
         Map.ofSeq
 
+and jobject =
+    map hashParser Object
+
+and jarray =
+    map arrayParser Array
+
+and jstring =
+    map stringParser Str
+
+and jnum =
+    map double Num
+
 and valueParser input =
     psp (
         alt
@@ -61,10 +73,10 @@ and valueParser input =
                 jtrue;
                 jfalse;
                 jnull
-                map hashParser Object;
-                map arrayParser Array;
-                map stringParser Str;
-                map double Num;
+                jobject;
+                jarray;
+                jstring;
+                jnum;
             ])
         input
 
@@ -74,8 +86,8 @@ let parser =
         (
             alt
                 [
-                    map hashParser Object;
-                    map arrayParser Array;
+                    jobject;
+                    jarray;
                 ]
         )
         sp
