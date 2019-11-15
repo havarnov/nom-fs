@@ -16,7 +16,6 @@ let private dotAndAfter (input: ReadOnlyMemory<_>): IResult<_, _> = result {
     | Some dot ->
         let! (inputii, afterDot) = opt digit1 inputi
         match afterDot with
-        // | Some afterDot -> return (input, concat dot afterDot)
         | Some afterDot -> return (inputii, input.Slice(0, dot.Length + afterDot.Length))
         | None -> return (inputii, dot)
     | None -> return (inputi, ReadOnlyMemory.Empty)}
@@ -24,7 +23,6 @@ let private dotAndAfter (input: ReadOnlyMemory<_>): IResult<_, _> = result {
 let private normalFloat (input: ReadOnlyMemory<_>) = result {
     let! (inputi, (d1, rest)) = tuple2 (digit1, opt dotAndAfter) input
     match rest with
-    // | Some rest -> return (input, concat d1 rest)
     | Some rest -> return (inputi, input.Slice(0, d1.Length + rest.Length))
     | None -> return (inputi, d1)}
 
@@ -37,30 +35,25 @@ let private e = alt [tag (m "e"); tag (m "E")]
 let private sign = opt (alt [tag (m "+"); tag (m "-")])
 
 let private exp (input: ReadOnlyMemory<_>) = result {
-    let! (inputi, (e, sign, d)) = tuple3 (e, sign, digit1) input
+    let! (input', (e, sign, d)) = tuple3 (e, sign, digit1) input
     match sign with
     | Some sign ->
-        // return (input, concat (concat e sign) d)
-        return (inputi, (input.Slice(0, e.Length + sign.Length + d.Length)))
+        return (input', input.Slice(0, e.Length + sign.Length + d.Length))
     | None ->
-        // return (input, concat e d)}
-        return (inputi, input.Slice(0, e.Length + d.Length))}
+        return (input', input.Slice(0, e.Length + d.Length))}
 
 let private doubleSeq (input: ReadOnlyMemory<_>) = result {
     let d = alt [ normalFloat; startWithDot; ]
-    let! (inputi, (sign, d, exp)) = tuple3 (sign, d, opt exp) input
+    let! (input', (sign, d, exp)) = tuple3 (sign, d, opt exp) input
     match (sign, exp) with
     | (Some sign, None) ->
-        // return (input, concat d sign)
-        return (inputi, input.Slice(0, d.Length + sign.Length))
+        return (input', input.Slice(0, d.Length + sign.Length))
     | (Some sign, Some exp) ->
-        // return (input, concat (concat sign d) exp)
-        return (inputi, input.Slice(0, sign.Length + d.Length + exp.Length))
+        return (input', input.Slice(0, sign.Length + d.Length + exp.Length))
     | (None, Some exp) ->
-        // return (input, concat d exp)
-        return (inputi, input.Slice(0, d.Length + exp.Length))
+        return (input', input.Slice(0, d.Length + exp.Length))
     | (None, None) ->
-        return (inputi, d)}
+        return (input', d)}
 
 /// Recognizes floating point number in a byte string and returns a f64
 let double =

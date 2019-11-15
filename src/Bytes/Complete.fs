@@ -24,9 +24,8 @@ let escaped
         if input.Length > 0 && input.Span.[0] = controlChar
         then
             escapable (input.Slice(1))
-            |> Result.map (fun (inputi, escapedChar) ->
-                // inputi, ReadOnlyMemory([|controlChar; escapedChar|]))
-                inputi, input.Slice(0, 2))
+            |> Result.map (fun (input', _) ->
+                input', input.Slice(0, 2))
         else
             Error (Err (input, Escape))
 
@@ -34,15 +33,12 @@ let escaped
         match normal input with
         | Ok (input, res) when input.IsEmpty || input.Span.[0] <> controlChar ->
             Ok (input, res)
-        | Ok (inputi, res) ->
-            match tryTakeEscaped inputi with
-            | Ok (inputii, escapedSeq) ->
-                // let res = concat res escapedSeq
-                let res = input.Slice(0, res.Length + escapedSeq.Length)
-                inner inputii
+        | Ok (input', res) ->
+            match tryTakeEscaped input' with
+            | Ok (input'', escapedSeq) ->
+                inner input''
                 |> Result.map (fun (innerInput, innerRes) ->
-                    // (innerInput, concat res innerRes))
-                    (innerInput, input.Slice(0, res.Length + innerRes.Length)))
+                    (innerInput, input.Slice(0, res.Length + escapedSeq.Length + innerRes.Length)))
             | Error e -> Error e
         | Error e -> Error e
 
