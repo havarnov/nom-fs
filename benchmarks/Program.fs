@@ -5,6 +5,8 @@ open BenchmarkDotNet.Attributes
 open BenchmarkDotNet.Running
 
 open BenchmarkDotNet.Configs;
+open NomFs.Core
+open FParsec.CharParsers
 
 [<MemoryDiagnoser>]
 type JsonComparison () =
@@ -46,7 +48,9 @@ type JsonComparison () =
 type TagComparison () =
     
     let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
+    let mutable inputAsString: string = String.Empty
     let memoryParser = NomFs.Bytes.Complete.tag ("Hello".AsMemory())
+    let fparseccParser = pstring "Hello"
 
     [<Params ("Hello, World", "123;")>] 
     member val public Input = String.Empty with get, set
@@ -54,10 +58,21 @@ type TagComparison () =
     [<GlobalSetup>]
     member self.GlobalSetupData() =
         inputAsMemory <- (self.Input.AsMemory())
+        inputAsString <- self.Input
         ()
 
     [<Benchmark>]
-    member self.Memory() = memoryParser inputAsMemory
+    member self.NomFsMemoryReadOnly() =
+        match memoryParser inputAsMemory with
+        | Ok (_, r) -> r
+        | Error (Err (e, _)) -> e
+        | _ -> raise (Exception "should not happen.")
+
+    [<Benchmark>]
+    member self.FparsecPstring() =
+        match run fparseccParser inputAsString with
+        | ParserResult.Success (s, _, _) -> s
+        | ParserResult.Failure (s, _, _) -> s
 
 [<EntryPoint>]
 let main argv =
