@@ -1,4 +1,4 @@
-﻿module NomFs.Core
+module NomFs.Core
 
 open System
 open NomFs.Result

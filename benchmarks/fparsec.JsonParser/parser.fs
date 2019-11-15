@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2008-2011
+// Copyright (c) Stephan Tolksdorf 2008-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 module Parser

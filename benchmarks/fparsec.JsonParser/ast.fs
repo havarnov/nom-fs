@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2008
+// Copyright (c) Stephan Tolksdorf 2008
 // License: Simplified BSD License. See accompanying documentation.
 
 module Ast
