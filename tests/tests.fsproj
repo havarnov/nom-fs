@@ -11,6 +11,7 @@
     <Compile Include="BranchTests.fs" />
     <Compile Include="CombinatorTests.fs" />
     <Compile Include="SequenceTests.fs" />
+    <Compile Include="Bytes/StreamingTests.fs" />
     <Compile Include="Bytes/CompleteTests.fs" />
     <Compile Include="Character/CompleteTests.fs" />
     <Compile Include="Number/CompleteTests.fs" />

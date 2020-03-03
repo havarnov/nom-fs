@@ -19,6 +19,11 @@ let extractErr res =
     | Error (Err e) -> e
     | e -> failwithf "Should never happen: %A" e
 
+let extractIncomplete res =
+    match res with
+    | Error (Incomplete l) -> l
+    | e -> failwithf "Should never happen: %A" e
+
 type Color = {
     Red: byte;
     Green: byte;
@@ -38,7 +43,7 @@ let ``color test`` () =
     let isHexDigit (c: char) =
         "abcdefABCDEF1234567890"
         |> Seq.contains c
-   
+
     let hexPrimary =
         mapRes (takeWhileMN 2 2 isHexDigit) fromHex
 

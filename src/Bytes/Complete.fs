@@ -6,13 +6,10 @@ open NomFs.Core
 
 let inline tag (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
     let inner (input: ReadOnlyMemory<'a>) =
-        if not t.IsEmpty
-           && input.Length >= t.Length
-           && (t.Span.SequenceEqual(input.Slice(0, t.Length).Span))
-        then
-            Ok (input.Slice(t.Length), t)
-        else
+        match NomFs.Bytes.Streaming.tag t input with
+        | Error (Incomplete _) ->
             Error (Err (input, Tag))
+        | o -> o
     inner
 
 let escaped
