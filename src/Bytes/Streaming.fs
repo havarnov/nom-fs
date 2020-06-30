@@ -18,3 +18,11 @@ let inline tag (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOn
         else
             Error (Err (input, Tag))
     inner
+
+let inline take count =
+    let inline inner (input: ReadOnlyMemory<'a>) =
+        if input.Length < count then
+            Error (Incomplete count)
+        else
+            Ok (input.Slice(count), input.Slice(0, count))
+    inner
