@@ -11,14 +11,11 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.0" />
-    <PackageReference Include="newtonsoft.json" Version="12.0.3" />
+    <PackageReference Include="fparsec" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\src\nom-fs.fsproj" />
-    <ProjectReference Include="..\tests\tests.fsproj" />
-    <ProjectReference Include="..\examples\json\json.fsproj" />
-    <ProjectReference Include=".\fparsec.JsonParser\JsonParser.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

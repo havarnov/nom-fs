@@ -31,6 +31,6 @@ type ParseResult<'I, 'O> = Result<'I * 'O, Err<'I * ErrorKind>>
 
 type Parser<'I, 'O> = 'I -> ParseResult<'I, 'O>
 
-let inline m (str: string) = str.AsMemory()
+let inline m (str: string) = str.AsMemory ()
 
-let inline a (i: 'a array) = ReadOnlyMemory(i)
+let inline a (i: 'a array) = ReadOnlyMemory i
