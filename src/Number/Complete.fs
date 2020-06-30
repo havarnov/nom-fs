@@ -10,7 +10,7 @@ open NomFs.Bytes.Complete
 open NomFs.Character.Complete
 open NomFs.Sequence
 
-let private dotAndAfter (input: ReadOnlyMemory<_>): IResult<_, _> = result {
+let inline private dotAndAfter (input: ReadOnlyMemory<_>): ParseResult<_, _> = result {
     let! (inputi, dot) = opt (tag (m ".")) input
     match dot with
     | Some dot ->
@@ -20,13 +20,13 @@ let private dotAndAfter (input: ReadOnlyMemory<_>): IResult<_, _> = result {
         | None -> return (inputii, dot)
     | None -> return (inputi, ReadOnlyMemory.Empty)}
 
-let private normalFloat (input: ReadOnlyMemory<_>) = result {
+let inline private normalFloat (input: ReadOnlyMemory<_>) = result {
     let! (inputi, (d1, rest)) = tuple2 (digit1, opt dotAndAfter) input
     match rest with
     | Some rest -> return (inputi, input.Slice(0, d1.Length + rest.Length))
     | None -> return (inputi, d1)}
 
-let private startWithDot (input: ReadOnlyMemory<_>) = result {
+let inline private startWithDot (input: ReadOnlyMemory<_>) = result {
     let! (inputi, (dot, rest)) = tuple2 (tag (m "."), digit1) input
     return (inputi, input.Slice(0, dot.Length + rest.Length))}
 
@@ -34,7 +34,7 @@ let private e = alt [tag (m "e"); tag (m "E")]
 
 let private sign = opt (alt [tag (m "+"); tag (m "-")])
 
-let private exp (input: ReadOnlyMemory<_>) = result {
+let inline private exp (input: ReadOnlyMemory<_>) = result {
     let! (input', (e, sign, d)) = tuple3 (e, sign, digit1) input
     match sign with
     | Some sign ->
@@ -42,7 +42,7 @@ let private exp (input: ReadOnlyMemory<_>) = result {
     | None ->
         return (input', input.Slice(0, e.Length + d.Length))}
 
-let private doubleSeq (input: ReadOnlyMemory<_>) = result {
+let inline private doubleSeq (input: ReadOnlyMemory<_>) = result {
     let d = alt [ normalFloat; startWithDot; ]
     let! (input', (sign, d, exp)) = tuple3 (sign, d, opt exp) input
     match (sign, exp) with
@@ -57,7 +57,7 @@ let private doubleSeq (input: ReadOnlyMemory<_>) = result {
 
 /// Recognizes floating point number in a byte string and returns a f64
 let double =
-    let inner (input: ReadOnlyMemory<_>) = result {
+    let inline inner (input: ReadOnlyMemory<_>) = result {
         match doubleSeq input with
         | Ok (input, doubleSeq) ->
             match doubleSeq |> (System.String.Concat >> System.Double.TryParse) with

@@ -4,20 +4,20 @@ open System
 
 open NomFs.Core
 
-let inline tag (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
-    let inner (input: ReadOnlyMemory<'a>) =
+let inline tag (t: ReadOnlyMemory<'a>) : _ -> ParseResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
+    let inline inner (input: ReadOnlyMemory<'a>) =
         match NomFs.Bytes.Streaming.tag t input with
         | Error (Incomplete _) ->
             Error (Err (input, Tag))
         | o -> o
     inner
 
-let escaped
-    (normal: ReadOnlyMemory<'a> -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>>)
+let inline escaped
+    (normal: ReadOnlyMemory<'a> -> ParseResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>>)
     (controlChar: 'a)
-    (escapable: ReadOnlyMemory<'a> -> IResult<ReadOnlyMemory<'a>, 'a>) =
+    (escapable: ReadOnlyMemory<'a> -> ParseResult<ReadOnlyMemory<'a>, 'a>) =
 
-    let tryTakeEscaped (input: ReadOnlyMemory<'a>) =
+    let inline tryTakeEscaped (input: ReadOnlyMemory<'a>) =
         if input.Length > 0 && input.Span.[0] = controlChar
         then
             escapable (input.Slice(1))
@@ -41,22 +41,22 @@ let escaped
 
     inner
 
-let take count =
-    let inner (input: ReadOnlyMemory<'a>) =
+let inline take count =
+    let inline inner (input: ReadOnlyMemory<'a>) =
         if input.Length < count then
             Error (Err (input, Eof))
         else
             Ok (input.Slice(count), input.Slice(0, count))
     inner
 
-let takeWhile predicate =
-    let inner (input: ReadOnlyMemory<'a>) =
+let inline takeWhile predicate =
+    let inline inner (input: ReadOnlyMemory<'a>) =
         let res = NomFs.ReadOnlyMemory.takeWhile predicate input
         Ok (input.Slice(res.Length), res)
     inner
 
-let takeWhileMN m n f =
-    let inner (input: ReadOnlyMemory<'a>) =
+let inline takeWhileMN m n f =
+    let inline inner (input: ReadOnlyMemory<'a>) =
         let res = input |> NomFs.ReadOnlyMemory.takeWhile f
         if m <= res.Length && res.Length <= n then
             Ok (input.Slice(res.Length), res)

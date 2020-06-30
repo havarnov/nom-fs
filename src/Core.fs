@@ -27,7 +27,9 @@ type ErrorKind =
     | Many
     | Float
 
-type IResult<'I, 'O> = Result<'I * 'O, Err<'I * ErrorKind>>
+type ParseResult<'I, 'O> = Result<'I * 'O, Err<'I * ErrorKind>>
+
+type Parser<'I, 'O> = 'I -> ParseResult<'I, 'O>
 
 let inline m (str: string) = str.AsMemory()
 

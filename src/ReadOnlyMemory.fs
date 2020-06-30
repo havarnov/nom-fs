@@ -1,35 +1,37 @@
 module NomFs.ReadOnlyMemory
 
+open NomFs
 open System
 
-let sequenceEqual (a: ReadOnlyMemory<'a>) (b: ReadOnlyMemory<'a>) =
+let inline sequenceEqual (a: ReadOnlyMemory<'a>) (b: ReadOnlyMemory<'a>) =
     if a.Length <> b.Length then
         false
     else
-        let mutable isEqual = true
-        for i in 0..(a.Length - 1) do
-            if a.Span.[i] <> b.Span.[i] then
-                isEqual <- false
-                // TODO: optimize by early return
-    
-        isEqual
+        let rec sequenceEqualInternal (aInternal: ReadOnlyMemory<'a>) (bInternal: ReadOnlyMemory<'a>) =
+            if aInternal.Length = 0 then
+                true
+            elif aInternal.Span.[0] = bInternal.Span.[0] then
+                sequenceEqualInternal (aInternal.Slice(1)) (bInternal.Slice(1))
+            else
+                false
+        sequenceEqualInternal a b
 
-let takeWhile (predicate: 'a -> bool) (source: ReadOnlyMemory<'a>) =
+let inline takeWhile (predicate: 'a -> bool) (source: ReadOnlyMemory<'a>) =
     let mutable splitAt = None
     let mutable current = 0
     while Option.isNone splitAt && current < source.Length do
         if not (predicate source.Span.[current])
         then
             splitAt <- Some current
-        
+
         current <- current + 1
-    
+
     match splitAt with
     | None -> source
     | Some splitAt ->
         source.Slice(0, splitAt)
 
-let contains (value: 'a) (source: ReadOnlyMemory<'a>) =
+let inline contains (value: 'a) (source: ReadOnlyMemory<'a>) =
     let mutable i = 0
     let mutable found = false
     while i < source.Length && not found do

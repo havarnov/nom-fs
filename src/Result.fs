@@ -2,7 +2,7 @@ module NomFs.Result
 
 open System
 
-let ofOption error = function Some s -> Ok s | None -> Error error
+let inline ofOption error = function Some s -> Ok s | None -> Error error
 
 type ResultBuilder() =
     member __.Return(x) = Ok x

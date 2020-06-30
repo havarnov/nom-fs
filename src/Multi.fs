@@ -8,7 +8,7 @@ open NomFs.Result
 /// </summary>
 /// <param name="sep">Parses the separator between list elements.</param>
 /// <param name="f">Parses the elements of the list.</param>
-let separatedList sep f =
+let inline separatedList sep f =
     let rec inner input res = result {
         match sep input with
         | Error (Err (input, _)) ->
@@ -24,7 +24,7 @@ let separatedList sep f =
             | Error _ -> return! Error (Failure (input, SeparatedList))
         | Error _ -> return! Error (Failure (input, SeparatedList))}
 
-    let outer input =
+    let inline outer input =
         match f input with
         | Ok (i1, o) ->
             if i1 = input then
@@ -36,7 +36,7 @@ let separatedList sep f =
 
     outer
 
-let many0 (parser: _ -> IResult<_, _>) input =
+let inline many0 (parser: _ -> ParseResult<_, _>) input =
     let rec inner input res =
         match parser input with
         | Ok (i1, o) ->
@@ -45,5 +45,5 @@ let many0 (parser: _ -> IResult<_, _>) input =
             else
                 inner i1 (Seq.append res (Seq.singleton o))
         | Error _ -> Ok (input, res)
-    
+
     inner input Seq.empty

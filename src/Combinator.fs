@@ -3,13 +3,13 @@ module NomFs.Combinator
 open NomFs.Core
 open System
 
-let opt p input =
+let inline opt p input =
     match p input with
     | Ok (rest, res) -> Ok (rest, Some res)
     | Error (Err (rest, _)) -> Ok (rest, None)
     | _ -> raise (NotImplementedException "opt")
 
-let mapRes f s =
+let inline mapRes f s =
     let inner i =
         match f i with
         | Ok (input, o1) ->
@@ -19,10 +19,10 @@ let mapRes f s =
         | Error e -> Error e
     inner
 
-let map f s =
-    let inner i =
-        match f i with
-        | Ok (input, o1) -> Ok (input, s o1)
+let inline map f s =
+    let inline inner input =
+        match f input with
+        | Ok (input, res) -> Ok (input, s res)
         | Error e -> Error e
     inner
 

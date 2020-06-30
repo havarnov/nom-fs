@@ -4,7 +4,7 @@ open System
 
 open NomFs.Core
 
-let inline tag (t: ReadOnlyMemory<'a>) : _ -> IResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
+let inline tag (t: ReadOnlyMemory<'a>) : _ -> ParseResult<ReadOnlyMemory<'a>, ReadOnlyMemory<'a>> =
     let inline inner (input: ReadOnlyMemory<'a>) =
         let isEmptyOrToShort =
             t.IsEmpty || input.Length < t.Length

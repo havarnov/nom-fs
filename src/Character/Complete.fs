@@ -6,7 +6,7 @@ open NomFs.Core
 
 open NomFs.ReadOnlyMemory
 
-let digit1 (input: ReadOnlyMemory<_>): IResult<ReadOnlyMemory<_>, ReadOnlyMemory<_>> =
+let inline digit1 (input: ReadOnlyMemory<_>): ParseResult<ReadOnlyMemory<_>, ReadOnlyMemory<_>> =
     let res =
         input
         |> takeWhile Char.IsDigit
@@ -18,8 +18,8 @@ let digit1 (input: ReadOnlyMemory<_>): IResult<ReadOnlyMemory<_>, ReadOnlyMemory
     else
         Error (Err (input, Digit))
 
-let oneOf list =
-    let inner (input: ReadOnlyMemory<_>) =
+let inline oneOf list =
+    let inline inner (input: ReadOnlyMemory<_>) =
         if input.Length > 0 && contains (input.Span.[0]) list
         then
             Ok (input.Slice(1), input.Span.[0])
@@ -30,7 +30,7 @@ let oneOf list =
 
 let alphanumeric1 =
     let inline inner (input: ReadOnlyMemory<_>) =
-        let res = input |> takeWhile Char.IsLetterOrDigit 
+        let res = input |> takeWhile Char.IsLetterOrDigit
         if res.IsEmpty then
             Error (Err (input, Alphanumeric))
         else
