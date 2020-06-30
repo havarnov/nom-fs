@@ -9,11 +9,63 @@ open NomFs.Core
 open FParsec.CharParsers
 
 [<MemoryDiagnoser>]
+type JsonStringComparison () =
+    let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
+    let mutable inputAsString: string = String.Empty
+
+    [<Params ("\"string\"")>]
+    member val public Input = String.Empty with get, set
+
+    [<GlobalSetup>]
+    member self.GlobalSetupData() =
+        inputAsMemory <- (self.Input.AsMemory())
+        inputAsString <- self.Input
+        ()
+
+    [<Benchmark>]
+    member self.Fparsec() =
+        match FParsec.CharParsers.run Parser.jstring inputAsString with
+        | ParserResult.Success (res, _, _) -> res
+        | _ -> raise (Exception "Every json should parse")
+
+    [<Benchmark>]
+    member self.Memory() =
+        match NomFs.Examples.Json.jstring inputAsMemory with
+        | Ok res -> res
+        | _ -> raise (Exception "Every json should parse")
+
+[<MemoryDiagnoser>]
+type JsonValueComparison () =
+    let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
+    let mutable inputAsString: string = String.Empty
+
+    [<Params ("null", "\"string\"", "123.32", "false")>]
+    member val public Input = String.Empty with get, set
+
+    [<GlobalSetup>]
+    member self.GlobalSetupData() =
+        inputAsMemory <- (self.Input.AsMemory())
+        inputAsString <- self.Input
+        ()
+
+    [<Benchmark>]
+    member self.Fparsec() =
+        match Parser.parseJsonString inputAsString with
+        | ParserResult.Success (res, _, _) -> res
+        | _ -> raise (Exception "Every json should parse")
+
+    [<Benchmark>]
+    member self.Memory() =
+        match NomFs.Examples.Json.valueParser inputAsMemory with
+        | Ok res -> res
+        | _ -> raise (Exception "Every json should parse")
+
+[<MemoryDiagnoser>]
 type JsonComparison () =
     let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
     let mutable inputAsString: string = String.Empty
 
-    [<Params ("basic.json")>] 
+    [<Params ("string.json", "number.json", "bool.json", "basic.json", "large.json")>]
     member val public Input = String.Empty with get, set
 
     [<GlobalSetup>]
@@ -25,99 +77,25 @@ type JsonComparison () =
 
     [<Benchmark>]
     member self.Fparsec() =
-        let result = Parser.parseJsonString inputAsString
-        ()
+        match Parser.parseJsonString inputAsString with
+        | ParserResult.Success (res, _, _) -> res
+        | _ -> raise (Exception "Every json should parse")
 
     [<Benchmark>]
     member self.Memory() =
-        let result = NomFs.Examples.Json.parser inputAsMemory
-        ()
-
-    [<Benchmark>]
-    member self.Newtonsoft() =
-        let result = Newtonsoft.Json.Linq.JObject.Parse(inputAsString)
-        ()
-
-    [<Benchmark>]
-    member self.TestJson() =
-        let result = System.Text.Json.JsonDocument.Parse(inputAsString)
-        ()
-
-[<MemoryDiagnoser>]
-type BoolAltComparison () =
-    
-    let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
-    let mutable inputAsString: string = String.Empty
-
-    let fparseccTrueParser = stringReturn "true"  (true)
-    let fparseccFalseParser = stringReturn "false" (false)
-    let fparseccBoolParser = FParsec.Primitives.choice [ fparseccTrueParser; fparseccFalseParser; ]
-
-    let nomTrueParser = NomFs.Combinator.map (NomFs.Bytes.Complete.tag (m "true")) (fun _ -> true);
-    let nomFalseParser = NomFs.Combinator.map (NomFs.Bytes.Complete.tag (m "false")) (fun _ -> true);
-    let nomBoolParser = NomFs.Branch.alt [ nomTrueParser; nomFalseParser; ]
-
-    [<Params ("true", "false", "somethingelse")>] 
-    member val public Input = String.Empty with get, set
-
-    [<GlobalSetup>]
-    member self.GlobalSetupData() =
-        inputAsMemory <- (self.Input.AsMemory())
-        inputAsString <- self.Input
-        ()
-
-    [<Benchmark>]
-    member self.NomFsMemoryReadOnly() =
-        match nomBoolParser inputAsMemory with
-        | Ok (_, r) -> Ok r
-        | Error (Err (e, _)) -> Error e
-        | _ -> raise (Exception "should not happen.")
-
-    [<Benchmark>]
-    member self.FparsecPstring() =
-        match run fparseccBoolParser inputAsString with
-        | ParserResult.Success (s, _, _) -> Ok s
-        | ParserResult.Failure (s, _, _) -> Error s
-
-[<MemoryDiagnoser>]
-type TagComparison () =
-    
-    let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
-    let mutable inputAsString: string = String.Empty
-    let memoryParser = NomFs.Bytes.Complete.tag ("Hello".AsMemory())
-    let fparseccParser = pstring "Hello"
-
-    [<Params ("Hello, World", "123;")>] 
-    member val public Input = String.Empty with get, set
-
-    [<GlobalSetup>]
-    member self.GlobalSetupData() =
-        inputAsMemory <- (self.Input.AsMemory())
-        inputAsString <- self.Input
-        ()
-
-    [<Benchmark>]
-    member self.NomFsMemoryReadOnly() =
-        match memoryParser inputAsMemory with
-        | Ok (_, r) -> r
-        | Error (Err (e, _)) -> e
-        | _ -> raise (Exception "should not happen.")
-
-    [<Benchmark>]
-    member self.FparsecPstring() =
-        match run fparseccParser inputAsString with
-        | ParserResult.Success (s, _, _) -> s
-        | ParserResult.Failure (s, _, _) -> s
+        match NomFs.Examples.Json.parser inputAsMemory with
+        | Ok res -> res
+        | _ -> raise (Exception "Every json should parse")
 
 [<EntryPoint>]
 let main argv =
     // due to unoptimized build of fparseccs
-    let o = DefaultConfig.Instance.With(ConfigOptions.DisableOptimizationsValidator)
+    let config = DefaultConfig.Instance.With(ConfigOptions.DisableOptimizationsValidator)
 
     BenchmarkSwitcher.FromTypes([|
-        typeof<TagComparison>;
         typeof<JsonComparison>;
-        typeof<BoolAltComparison>;
+        typeof<JsonValueComparison>;
+        typeof<JsonStringComparison>;
         |])
-        .Run(argv, o) |> ignore
+        .Run(argv, config) |> ignore
     0 // return an integer exit code
