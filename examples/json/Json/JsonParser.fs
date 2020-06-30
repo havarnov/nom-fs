@@ -26,7 +26,7 @@ let strParser = escaped alphanumeric1 '\\' (oneOf (m "\"n\\"))
 
 let stringParser =
     let bs = tag (m "\"")
-    map (tuple3 (bs, strParser, bs)) (fun (_, str, _) -> str |> System.String.Concat)
+    map (tuple3 (bs, strParser, bs)) (fun (_, str, _) -> str.ToString ())
 
 let jtrue = map (tag (m "true")) (fun _ -> Boolean true);
 let jfalse = map (tag (m "false")) (fun _ -> Boolean false);
