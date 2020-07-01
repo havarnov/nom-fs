@@ -10,41 +10,73 @@ open NomFs.Core
 open NomFs.Bytes.Complete
 
 [<MemoryDiagnoser>]
-type TagSuccessfulBenchmark() =
+type TagBenchmark() =
     let mutable inputAsMemory: ReadOnlyMemory<char> = ReadOnlyMemory.Empty
+
     let mutable inputAsString: string = String.Empty
 
-    let fparsecPstringParser = pstring "{"
-    let nomfsTagParser = tag (m "{")
+    let mutable result: bool = false
 
-    [<Params ("{foo}")>]
-    member val public Input = String.Empty with get, set
+    let mutable f: (CharStream<unit> -> Reply<string>) option = None
+
+    let mutable n: (ReadOnlyMemory<char> -> ParseResult<ReadOnlyMemory<char>, ReadOnlyMemory<char>>) option = None
+
+    [<ParamsSource("InputParams")>]
+    member val public Input: string * string * bool = (String.Empty, String.Empty, false) with get, set
+
+    member val public InputParams: (string * string * bool) seq =
+        seq {
+            yield ("{", "{foobar}", true)
+            yield ("foobar", "foobar1234", true)
+            yield ("1234", "foobar1234", false)
+        }
 
     [<GlobalSetup>]
     member self.GlobalSetupData() =
-        inputAsMemory <- self.Input.AsMemory()
-        inputAsString <- self.Input
+        let (tagString, inputString, result') = self.Input
+        inputAsString <- inputString
+        inputAsMemory <- inputAsString.AsMemory()
+        result <- result'
+        f <- Some (pstring tagString)
+        n <- Some (tag (m tagString))
         ()
 
     [<Benchmark>]
     member self.FParsec() =
-        match run fparsecPstringParser inputAsString with
-        | ParserResult.Success (res, _, _) -> res
-        | _ -> raise (Exception "Every tag should parse")
+        match run f.Value inputAsString with
+        | ParserResult.Success (res, _, _) ->
+            if result then
+                Some res
+            else
+                raise (Exception "Tag should successfully parse")
+        | _ ->
+            if not result then
+                None
+            else
+                raise (Exception "Tag should _not_ successfully parse")
 
     [<Benchmark>]
     member self.NomFs() =
-        match nomfsTagParser inputAsMemory with
-        | Result.Ok res -> res
-        | _ -> raise (Exception "Every tag should parse")
+        match n.Value inputAsMemory with
+        | Result.Ok res ->
+            if result then
+                Some res
+            else
+                raise (Exception "Tag should successfully parse")
+        | _ ->
+            if not result then
+                None
+            else
+                raise (Exception "Tag should _not_ successfully parse")
 
 [<EntryPoint>]
 let main argv =
+    // TODO: can this be removed?
     // due to unoptimized build of fparseccs
     let config = DefaultConfig.Instance.With(ConfigOptions.DisableOptimizationsValidator)
 
     BenchmarkSwitcher.FromTypes([|
-        typeof<TagSuccessfulBenchmark>;
+        typeof<TagBenchmark>;
         |])
         .Run(argv, config) |> ignore
     0 // return an integer exit code
