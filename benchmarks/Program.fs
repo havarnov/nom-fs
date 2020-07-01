@@ -71,9 +71,7 @@ type TagBenchmark() =
 
 [<EntryPoint>]
 let main argv =
-    // TODO: can this be removed?
-    // due to unoptimized build of fparseccs
-    let config = DefaultConfig.Instance.With(ConfigOptions.DisableOptimizationsValidator)
+    let config = DefaultConfig.Instance
 
     BenchmarkSwitcher.FromTypes([|
         typeof<TagBenchmark>;
