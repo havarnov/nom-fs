@@ -4,4 +4,6 @@ obj/
 .ionide/
 .idea/
 
+*DotSettings.user
+
 .DS_Store

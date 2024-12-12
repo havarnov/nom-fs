@@ -16,4 +16,7 @@
     <Compile Include="Character/Complete.fs" />
     <Compile Include="Number/Complete.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" />
+  </ItemGroup>
 </Project>

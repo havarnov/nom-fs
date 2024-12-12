@@ -1,7 +1,6 @@
 module NomFs.Core
 
 open System
-open NomFs.Result
 
 type Needed =
     | Unknown

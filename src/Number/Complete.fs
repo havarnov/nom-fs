@@ -2,6 +2,7 @@ module NomFs.Number.Complete
 
 open System
 
+open System.Globalization
 open NomFs.Core
 open NomFs.Result
 open NomFs.Combinator
@@ -60,7 +61,8 @@ let double =
     let inline inner (input: ReadOnlyMemory<_>) = result {
         match doubleSeq input with
         | Ok (input, doubleSeq) ->
-            match doubleSeq |> (System.String.Concat >> System.Double.TryParse) with
+            // match doubleSeq |> (System.String.Concat >> System.Double.TryParse) with
+            match Double.TryParse(doubleSeq |> String.Concat, NumberFormatInfo.InvariantInfo) with
             | (true, d) -> return (input, d)
             | (false, _) -> return! Error (Err (input, Float))
         | Error _ ->
