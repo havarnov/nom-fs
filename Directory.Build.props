@@ -1,0 +1,11 @@
+<Project DefaultTargets="Build">
+ <PropertyGroup>
+   <TargetFramework>net9.0</TargetFramework>
+   <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+   <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+   <EnableNETAnalyzers>true</EnableNETAnalyzers>
+   <AnalysisModeStyle>Recommended</AnalysisModeStyle>
+   <GenerateDocumentationFile>true</GenerateDocumentationFile>
+ </PropertyGroup>
+</Project>
+
