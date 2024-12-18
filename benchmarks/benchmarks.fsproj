@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\nom-cs\nom-cs.csproj" />
     <ProjectReference Include="..\src\nom-fs.fsproj" />
   </ItemGroup>
 
